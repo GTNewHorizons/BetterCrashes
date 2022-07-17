@@ -13,6 +13,6 @@ public class BetterCrashes {
     public static final String MODID = "bettercrashes";
     public static final String NAME = "BetterCrashes";
     public static final String VERSION = "@VERSION@";
-    public static final String DEPENDENCIES = "required-after:grimoire";
+    public static final String DEPENDENCIES = "";
     public static final Logger logger = LogManager.getLogger("BetterCrashes");
 }

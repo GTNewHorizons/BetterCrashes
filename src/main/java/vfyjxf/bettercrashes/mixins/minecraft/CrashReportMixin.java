@@ -4,7 +4,7 @@
  *The source file uses the MIT License.
  */
 
-package vfyjxf.bettercrashes.mixins;
+package vfyjxf.bettercrashes.mixins.minecraft;
 
 import cpw.mods.fml.common.ModContainer;
 import java.io.PrintWriter;
@@ -30,7 +30,7 @@ import vfyjxf.bettercrashes.utils.ModIdentifier;
 import vfyjxf.bettercrashes.utils.StacktraceDeobfuscator;
 
 @Mixin(value = CrashReport.class, priority = 500)
-public class MixinCrashReport implements IPatchedCrashReport {
+public class CrashReportMixin implements IPatchedCrashReport {
     @Shadow
     @Final
     private CrashReportCategory theReportCategory;

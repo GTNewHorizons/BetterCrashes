@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "vfyjxf.bettercrashes.mixins",
+  "plugin": "vfyjxf.bettercrashes.mixinplugin.MixinPlugin",
+  "refmap": "mixins.bettercrashes.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "client": [],
+  "server": []
+}

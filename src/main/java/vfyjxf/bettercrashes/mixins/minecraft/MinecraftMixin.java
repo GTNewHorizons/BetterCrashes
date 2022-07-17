@@ -4,7 +4,7 @@
  *The source file uses the MIT License.
  */
 
-package vfyjxf.bettercrashes.mixins.client;
+package vfyjxf.bettercrashes.mixins.minecraft;
 
 import cpw.mods.fml.client.SplashProgress;
 import cpw.mods.fml.common.Loader;
@@ -47,7 +47,7 @@ import vfyjxf.bettercrashes.utils.StateManager;
  * @author Runemoro
  */
 @Mixin(Minecraft.class)
-public abstract class MixinMinecraft {
+public abstract class MinecraftMixin {
 
     @Shadow
     @Final
