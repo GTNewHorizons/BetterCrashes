@@ -8,6 +8,9 @@ package vfyjxf.bettercrashes.mixins.client;
 
 import cpw.mods.fml.client.SplashProgress;
 import cpw.mods.fml.common.Loader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Queue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.*;
@@ -40,58 +43,113 @@ import vfyjxf.bettercrashes.utils.GuiCrashScreen;
 import vfyjxf.bettercrashes.utils.GuiInitErrorScreen;
 import vfyjxf.bettercrashes.utils.StateManager;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Queue;
-
 /**
  * @author Runemoro
  */
 @Mixin(Minecraft.class)
-public abstract class MixinMinecraft{
+public abstract class MixinMinecraft {
 
-    @Shadow @Final private static Logger logger;
-    @Shadow volatile boolean running;
-    @Shadow private boolean hasCrashed;
-    @Shadow private CrashReport crashReporter;
-    @Shadow public static byte[] memoryReserve;
-    @Shadow @Final private Queue field_152351_aB;// field_152351_aB --> scheduledTasks
-    @Shadow public EntityRenderer entityRenderer;
-    @Shadow private long field_83002_am;//field_83002_am-->debugCrashKeyPressTime
-    @Shadow public GameSettings gameSettings;
-    @Shadow public GuiIngame ingameGUI;
-    @Shadow private List defaultResourcePacks;
-    @Shadow private IReloadableResourceManager mcResourceManager;
-    @Shadow public FontRenderer fontRenderer;
-    @Shadow public TextureManager renderEngine;
-    @Shadow private LanguageManager mcLanguageManager;
-    @Shadow private SoundHandler mcSoundHandler;
-    @Shadow @Final private IMetadataSerializer metadataSerializer_;
-    @Shadow private Framebuffer framebufferMc;
-    @Shadow public GuiScreen currentScreen;
-    @Shadow private int leftClickCounter;
-    @Shadow public int displayWidth;
-    @Shadow public int displayHeight;
+    @Shadow
+    @Final
+    private static Logger logger;
 
-    @Shadow protected abstract void startGame() throws LWJGLException;
-    @Shadow public abstract void displayGuiScreen(GuiScreen guiScreenIn);
-    @Shadow public abstract CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash);
+    @Shadow
+    volatile boolean running;
 
-    @Shadow protected abstract void runGameLoop();
+    @Shadow
+    private boolean hasCrashed;
 
-    @Shadow public abstract NetHandlerPlayClient getNetHandler();
+    @Shadow
+    private CrashReport crashReporter;
 
-    @Shadow public abstract void loadWorld(WorldClient worldClientIn);
+    @Shadow
+    public static byte[] memoryReserve;
 
-    @Shadow public abstract void freeMemory();
+    @Shadow
+    @Final
+    private Queue field_152351_aB; // field_152351_aB --> scheduledTasks
 
-    @Shadow public abstract void shutdownMinecraftApplet();
+    @Shadow
+    public EntityRenderer entityRenderer;
 
-    @Shadow public abstract void refreshResources();
+    @Shadow
+    private long field_83002_am; // field_83002_am-->debugCrashKeyPressTime
 
-    @Shadow protected abstract void checkGLError(String message);
+    @Shadow
+    public GameSettings gameSettings;
 
-    @Shadow public abstract void func_147120_f();// func_147120_f --> resetSize
+    @Shadow
+    public GuiIngame ingameGUI;
+
+    @Shadow
+    private List defaultResourcePacks;
+
+    @Shadow
+    private IReloadableResourceManager mcResourceManager;
+
+    @Shadow
+    public FontRenderer fontRenderer;
+
+    @Shadow
+    public TextureManager renderEngine;
+
+    @Shadow
+    private LanguageManager mcLanguageManager;
+
+    @Shadow
+    private SoundHandler mcSoundHandler;
+
+    @Shadow
+    @Final
+    private IMetadataSerializer metadataSerializer_;
+
+    @Shadow
+    private Framebuffer framebufferMc;
+
+    @Shadow
+    public GuiScreen currentScreen;
+
+    @Shadow
+    private int leftClickCounter;
+
+    @Shadow
+    public int displayWidth;
+
+    @Shadow
+    public int displayHeight;
+
+    @Shadow
+    protected abstract void startGame() throws LWJGLException;
+
+    @Shadow
+    public abstract void displayGuiScreen(GuiScreen guiScreenIn);
+
+    @Shadow
+    public abstract CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash);
+
+    @Shadow
+    protected abstract void runGameLoop();
+
+    @Shadow
+    public abstract NetHandlerPlayClient getNetHandler();
+
+    @Shadow
+    public abstract void loadWorld(WorldClient worldClientIn);
+
+    @Shadow
+    public abstract void freeMemory();
+
+    @Shadow
+    public abstract void shutdownMinecraftApplet();
+
+    @Shadow
+    public abstract void refreshResources();
+
+    @Shadow
+    protected abstract void checkGLError(String message);
+
+    @Shadow
+    public abstract void func_147120_f(); // func_147120_f --> resetSize
 
     private int clientCrashCount = 0;
     private int serverCrashCount = 0;
@@ -101,7 +159,7 @@ public abstract class MixinMinecraft{
      * @reason Overwrite Minecraft.run()
      */
     @Overwrite
-    public void run(){
+    public void run() {
         running = true;
         try {
             startGame();
@@ -145,7 +203,6 @@ public abstract class MixinMinecraft{
         } finally {
             shutdownMinecraftApplet();
         }
-
     }
 
     /**
@@ -159,7 +216,7 @@ public abstract class MixinMinecraft{
             // Reset hasCrashed, debugCrashKeyPressTime, and crashIntegratedServerNextTick
             hasCrashed = false;
             field_83002_am = -1;
-//            crashIntegratedServerNextTick = false;
+            //            crashIntegratedServerNextTick = false;
 
             // Vanilla does this when switching to main menu but not our custom crash screen
             // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
@@ -167,19 +224,25 @@ public abstract class MixinMinecraft{
             ingameGUI.getChatGUI().clearChatMessages();
 
             // Display the crash screen
-//            runGUILoop(new GuiCrashScreen(report));
+            //            runGUILoop(new GuiCrashScreen(report));
             displayGuiScreen(new GuiCrashScreen(report));
         } catch (Throwable t) {
             // The crash screen has crashed. Report it normally instead.
-            logger.error("An uncaught exception occured while displaying the crash screen, making normal report instead", t);
+            logger.error(
+                    "An uncaught exception occured while displaying the crash screen, making normal report instead", t);
             displayCrashReport(report);
             System.exit(report.getFile() != null ? -1 : -2);
         }
     }
 
-    private void addInfoToCrash(CrashReport crashReport){
-        crashReport.getCategory().addCrashSectionCallable("Client Crashes Since Restart",() -> String.valueOf(clientCrashCount));
-        crashReport.getCategory().addCrashSectionCallable("Integrated Server Crashes Since Restart", () -> String.valueOf(serverCrashCount));
+    private void addInfoToCrash(CrashReport crashReport) {
+        crashReport
+                .getCategory()
+                .addCrashSectionCallable("Client Crashes Since Restart", () -> String.valueOf(clientCrashCount));
+        crashReport
+                .getCategory()
+                .addCrashSectionCallable(
+                        "Integrated Server Crashes Since Restart", () -> String.valueOf(serverCrashCount));
     }
 
     /**
@@ -194,12 +257,15 @@ public abstract class MixinMinecraft{
                     originalMemoryReserveSize = memoryReserve.length;
                     memoryReserve = new byte[0];
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
 
             StateManager.resetStates();
 
             if (getNetHandler() != null) {
-                getNetHandler().getNetworkManager().closeChannel(new ChatComponentText("[BetterCrashes] Client crashed"));
+                getNetHandler()
+                        .getNetworkManager()
+                        .closeChannel(new ChatComponentText("[BetterCrashes] Client crashed"));
             }
             loadWorld(null);
             if (entityRenderer.isShaderActive()) {
@@ -210,14 +276,16 @@ public abstract class MixinMinecraft{
             if (originalMemoryReserveSize != -1) {
                 try {
                     memoryReserve = new byte[originalMemoryReserveSize];
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
             System.gc();
         } catch (Throwable t) {
             logger.error("Failed to reset state after a crash", t);
             try {
                 StateManager.resetStates();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -236,7 +304,8 @@ public abstract class MixinMinecraft{
             mcResourceManager.registerReloadListener(mcLanguageManager);
 
             refreshResources(); // TODO: Why is this necessary?
-            fontRenderer = new FontRenderer(gameSettings, new ResourceLocation("textures/font/ascii.png"), renderEngine, false);
+            fontRenderer = new FontRenderer(
+                    gameSettings, new ResourceLocation("textures/font/ascii.png"), renderEngine, false);
             mcResourceManager.registerReloadListener(fontRenderer);
 
             mcSoundHandler = new SoundHandler(mcResourceManager, gameSettings);
@@ -245,11 +314,14 @@ public abstract class MixinMinecraft{
             running = true;
             try {
                 //noinspection deprecation
-                SplashProgress.pause();// Disable the forge splash progress screen
-            } catch (Throwable ignored) {}
+                SplashProgress.pause(); // Disable the forge splash progress screen
+            } catch (Throwable ignored) {
+            }
             runGUILoop(new GuiInitErrorScreen(report));
         } catch (Throwable t) {
-            logger.error("An uncaught exception occured while displaying the init error screen, making normal report instead", t);
+            logger.error(
+                    "An uncaught exception occured while displaying the init error screen, making normal report instead",
+                    t);
             displayCrashReport(report);
             System.exit(report.getFile() != null ? -1 : -2);
         }
@@ -261,7 +333,10 @@ public abstract class MixinMinecraft{
      */
     private void runGUILoop(GuiScreen screen) throws IOException {
         displayGuiScreen(screen);
-        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu) && !(Loader.isModLoaded("custommainmenu"))) {
+        while (running
+                && currentScreen != null
+                && !(currentScreen instanceof GuiMainMenu)
+                && !(Loader.isModLoaded("custommainmenu"))) {
             if (Display.isCreated() && Display.isCloseRequested()) {
                 System.exit(0);
             }
@@ -277,11 +352,18 @@ public abstract class MixinMinecraft{
             GL11.glViewport(0, 0, displayWidth, displayHeight);
 
             // EntityRenderer.setupOverlayRendering
-            ScaledResolution scaledResolution = new ScaledResolution((Minecraft) (Object) this,displayWidth,displayHeight);
+            ScaledResolution scaledResolution =
+                    new ScaledResolution((Minecraft) (Object) this, displayWidth, displayHeight);
             GL11.glClear(256);
             GL11.glMatrixMode(5889);
             GL11.glLoadIdentity();
-            GL11.glOrtho(0.0D, scaledResolution.getScaledWidth_double(), scaledResolution.getScaledHeight_double(), 0, 1000, 3000);
+            GL11.glOrtho(
+                    0.0D,
+                    scaledResolution.getScaledWidth_double(),
+                    scaledResolution.getScaledHeight_double(),
+                    0,
+                    1000,
+                    3000);
             GL11.glMatrixMode(5888);
             GL11.glLoadIdentity();
             GL11.glTranslatef(0, 0, -2000);
@@ -307,7 +389,6 @@ public abstract class MixinMinecraft{
         }
     }
 
-
     /**
      * @author Runemoro
      * @reason
@@ -317,8 +398,4 @@ public abstract class MixinMinecraft{
     public void displayCrashReport(CrashReport report) {
         CrashUtils.outputReport(report);
     }
-
 }
-
-
-

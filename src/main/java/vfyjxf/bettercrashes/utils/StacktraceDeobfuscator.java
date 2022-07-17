@@ -20,7 +20,8 @@ import java.util.zip.ZipInputStream;
  * @author Runemoro
  */
 public final class StacktraceDeobfuscator {
-    private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to set to false when done!
+    private static final boolean DEBUG_IN_DEV =
+            false; // Makes this MCP -> SRG for testing in dev. Don't forget to set to false when done!
     private static HashMap<String, String> srgMcpMethodMap = null;
 
     /**
@@ -34,7 +35,8 @@ public final class StacktraceDeobfuscator {
         if (!mappings.exists()) {
             HttpURLConnection connection = null;
             try {
-                URL mappingsURL = new URL("http://export.mcpbot.bspk.rs/mcp_stable_nodoc/39-1.12/mcp_stable_nodoc-39-1.12.zip");
+                URL mappingsURL =
+                        new URL("http://export.mcpbot.bspk.rs/mcp_stable_nodoc/39-1.12/mcp_stable_nodoc-39-1.12.zip");
                 connection = (HttpURLConnection) mappingsURL.openConnection();
                 connection.setDoInput(true);
                 connection.connect();
@@ -72,9 +74,11 @@ public final class StacktraceDeobfuscator {
                 String mappingLine = scanner.nextLine();
                 int commaIndex = mappingLine.indexOf(',');
                 String srgName = mappingLine.substring(0, commaIndex);
-                String mcpName = mappingLine.substring(commaIndex + 1, commaIndex + 1 + mappingLine.substring(commaIndex + 1).indexOf(','));
+                String mcpName = mappingLine.substring(
+                        commaIndex + 1,
+                        commaIndex + 1 + mappingLine.substring(commaIndex + 1).indexOf(','));
 
-                //System.out.println(srgName + " <=> " + mcpName);
+                // System.out.println(srgName + " <=> " + mcpName);
                 if (!DEBUG_IN_DEV) {
                     srgMcpMethodMap.put(srgName, mcpName);
                 } else {
@@ -103,7 +107,8 @@ public final class StacktraceDeobfuscator {
     public static StackTraceElement[] deobfuscateStacktrace(StackTraceElement[] stackTrace) {
         int index = 0;
         for (StackTraceElement el : stackTrace) {
-            stackTrace[index++] = new StackTraceElement(el.getClassName(), deobfuscateMethodName(el.getMethodName()), el.getFileName(), el.getLineNumber());
+            stackTrace[index++] = new StackTraceElement(
+                    el.getClassName(), deobfuscateMethodName(el.getMethodName()), el.getFileName(), el.getLineNumber());
         }
         return stackTrace;
     }
@@ -114,7 +119,8 @@ public final class StacktraceDeobfuscator {
         }
 
         String mcpName = srgMcpMethodMap.get(srgName);
-        // log.debug(srgName + " <=> " + mcpName != null ? mcpName : "?"); // Can't do this, it would be a recursive call to log appender
+        // log.debug(srgName + " <=> " + mcpName != null ? mcpName : "?"); // Can't do this, it would be a recursive
+        // call to log appender
         return mcpName != null ? mcpName : srgName;
     }
 

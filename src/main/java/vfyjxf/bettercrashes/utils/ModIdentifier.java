@@ -8,17 +8,16 @@ package vfyjxf.bettercrashes.utils;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Runemoro
@@ -65,7 +64,8 @@ public final class ModIdentifier {
 
         // Get the mod containing that class
         try {
-            if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
+            if (url.getProtocol().equals("jar"))
+                url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
             return modMap.get(new File(url.toURI()).getCanonicalFile());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
@@ -86,7 +86,8 @@ public final class ModIdentifier {
 
         try {
             modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
-            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML, forge)
+            modMap.remove(
+                    Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML, forge)
         } catch (NullPointerException ignored) {
             // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
         }

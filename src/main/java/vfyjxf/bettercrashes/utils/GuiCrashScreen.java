@@ -14,7 +14,6 @@ import net.minecraft.client.gui.GuiOptionButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReport;
 
-
 @SideOnly(Side.CLIENT)
 public class GuiCrashScreen extends GuiProblemScreen {
     public GuiCrashScreen(CrashReport report) {
@@ -24,7 +23,8 @@ public class GuiCrashScreen extends GuiProblemScreen {
     @Override
     public void initGui() {
         super.initGui();
-        GuiOptionButton mainMenuButton = new GuiOptionButton(0, width / 2 - 50 - 115, height / 4 + 120 + 12, 110, 20, I18n.format("bettercrashes.gui.toTitle"));
+        GuiOptionButton mainMenuButton = new GuiOptionButton(
+                0, width / 2 - 50 - 115, height / 4 + 120 + 12, 110, 20, I18n.format("bettercrashes.gui.toTitle"));
         buttonList.add(mainMenuButton);
     }
 
@@ -39,7 +39,8 @@ public class GuiCrashScreen extends GuiProblemScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) { // TODO: localize number of lines
         drawDefaultBackground();
-        drawCenteredString(fontRendererObj, I18n.format("bettercrashes.crashscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
+        drawCenteredString(
+                fontRendererObj, I18n.format("bettercrashes.crashscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
 
         int textColor = 0xD0D0D0;
         int x = width / 2 - 155;
@@ -52,7 +53,14 @@ public class GuiCrashScreen extends GuiProblemScreen {
 
         drawString(fontRendererObj, I18n.format("bettercrashes.crashscreen.paragraph2.line1"), x, y += 11, textColor);
 
-        drawCenteredString(fontRendererObj, report.getFile() != null ? "\u00A7n" + report.getFile().getName() : I18n.format("vanillafix.crashscreen.reportSaveFailed"), width / 2, y += 11, 0x00FF00);
+        drawCenteredString(
+                fontRendererObj,
+                report.getFile() != null
+                        ? "\u00A7n" + report.getFile().getName()
+                        : I18n.format("vanillafix.crashscreen.reportSaveFailed"),
+                width / 2,
+                y += 11,
+                0x00FF00);
 
         drawString(fontRendererObj, I18n.format("bettercrashes.crashscreen.paragraph3.line1"), x, y += 12, textColor);
         drawString(fontRendererObj, I18n.format("bettercrashes.crashscreen.paragraph3.line2"), x, y += 9, textColor);
