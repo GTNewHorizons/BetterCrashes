@@ -118,8 +118,9 @@ public abstract class MinecraftMixin {
     @Shadow
     public int displayHeight;
 
+    @SuppressWarnings("MixinAnnotationTarget")
     @Shadow
-    protected abstract void startGame() throws LWJGLException;
+    protected abstract void func_71384_a() throws LWJGLException; // func_71384_a --> startGame
 
     @Shadow
     public abstract void displayGuiScreen(GuiScreen guiScreenIn);
@@ -162,7 +163,7 @@ public abstract class MinecraftMixin {
     public void run() {
         running = true;
         try {
-            startGame();
+            func_71384_a();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.makeCrashReport(throwable, "Initializing game");
             crashReport.makeCategory("Initialization");
