@@ -10,9 +10,10 @@ import org.apache.logging.log4j.Logger;
         name = BetterCrashes.NAME,
         dependencies = BetterCrashes.DEPENDENCIES)
 public class BetterCrashes {
-    public static final String MODID = "bettercrashes";
-    public static final String NAME = "BetterCrashes";
-    public static final String VERSION = "@VERSION@";
+
+    public static final String MODID = "GRADLETOKEN_MODID";
+    public static final String NAME = "GRADLETOKEN_MODNAME";
+    public static final String VERSION = "GRADLETOKEN_VERSION";
     public static final String DEPENDENCIES = "";
-    public static final Logger logger = LogManager.getLogger("BetterCrashes");
+    public static final Logger logger = LogManager.getLogger(NAME);
 }
