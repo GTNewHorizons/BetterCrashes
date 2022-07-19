@@ -1,23 +1,21 @@
-bettercrashes.gui.uploadReportAndCopyLink=Upload and copy link
-bettercrashes.gui.openCrashReport=Open Crash Report
-bettercrashes.gui.failed=[Failed]
-bettercrashes.crashscreen.identificationErrored=[Error identifying]
-bettercrashes.crashscreen.unknownCause=Unknown
-bettercrashes.gui.toTitle=Return to main menu
+bettercrashes.gui.crash.toTitle=Return to main menu
+bettercrashes.gui.common.uploadReportAndCopyLink=Upload and copy link
+bettercrashes.gui.common.openCrashReport=Open Crash Report
+bettercrashes.gui.common.failed=[Failed]
+bettercrashes.gui.common.gtnhIssueTracker=Open GTNH issue tracker
 
-bettercrashes.crashscreen.title=Minecraft crashed!
-bettercrashes.crashscreen.summary=Minecraft ran into a problem and crashed.
-bettercrashes.crashscreen.paragraph1.line1=The following mod(s) have been identified as potential causes:
-bettercrashes.crashscreen.paragraph2.line1=report has been generated, and click the button below to open:
-bettercrashes.crashscreen.paragraph3.line1=You're encouraged to send this report's link to the mod's author to help
-bettercrashes.crashscreen.paragraph3.line2=them fix the issue, click the "Upload and Copy link" can upload report
-bettercrashes.crashscreen.paragraph3.line3=and copy its link to clipboard. Since BetterCrashes is installed, you
-bettercrashes.crashscreen.paragraph3.line4=can keep playing despite the crash.
+bettercrashes.gui.common.paragraph1=The following mod(s) have been identified as potential causes:
+bettercrashes.gui.common.identificationErrored=[Error identifying]
+bettercrashes.gui.common.unknownCause=Unknown
+bettercrashes.gui.common.paragraph2=report has been generated, and click the button below to open:
+bettercrashes.gui.common.reportSaveFailed=[Error saving report, see log]
+bettercrashes.gui.common.paragraph3=You're encouraged to send this report's link to the mod's author to help them fix the issue. Clicking the "Upload and Copy link" button can upload report and copy its link to clipboard. Since BetterCrashes is installed, you can keep playing despite the crash.
+bettercrashes.gui.common.paragraph3_gtnh=You're encouraged to send this report's link to the GTNH issue tracker to help us fix the issue, AFTER searching the tracker for similar issue already reported. Clicking the "Upload and Copy link" button can upload report and copy its link to clipboard. Since BetterCrashes is installed, you can keep playing despite the crash.
+bettercrashes.gui.common.paragraph4_gtnh=GTNH does not support the following mod(s):
+bettercrashes.gui.common.paragraph5_gtnh=When sending report, add mention to these as well.
 
-bettercrashes.initerrorscreen.title=Minecraft failed to start!
-bettercrashes.initerrorscreen.summary=An error during startup prevented Minecraft from starting.
-bettercrashes.initerrorscreen.paragraph2.line1=report has been generated, and click the button below to open:
-bettercrashes.initerrorscreen.paragraph3.line1=You're encouraged to send this report's link to the mod's author to help
-bettercrashes.initerrorscreen.paragraph3.line2=them fix the issue, click the "Upload and Copy link" can upload report
-bettercrashes.initerrorscreen.paragraph3.line3=and copy its link to clipboard. Since BetterCrashes is installed, you
-bettercrashes.initerrorscreen.paragraph3.line4=can keep playing despite the crash.
+bettercrashes.gui.crash.title=Minecraft crashed!
+bettercrashes.gui.crash.summary=Minecraft ran into a problem and crashed.
+
+bettercrashes.gui.init_error.title=Minecraft failed to start!
+bettercrashes.gui.init_error.summary=An error during startup prevented Minecraft from starting.
