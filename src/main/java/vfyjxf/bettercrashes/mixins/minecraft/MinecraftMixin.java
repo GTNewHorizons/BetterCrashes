@@ -315,7 +315,7 @@ public abstract class MinecraftMixin {
             running = true;
             try {
                 //noinspection deprecation
-                SplashProgress.pause(); // Disable the forge splash progress screen
+                SplashProgress.finish(); // Disable the forge splash progress screen
             } catch (Throwable ignored) {
             }
             runGUILoop(new GuiInitErrorScreen(report));
