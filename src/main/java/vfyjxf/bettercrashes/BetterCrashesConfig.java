@@ -19,7 +19,7 @@ public class BetterCrashesConfig {
     public static void syncConfig() {
         config.setCategoryComment(GENERAL, "General config");
 
-        isGTNH = config.get(GENERAL, "isGTNH", true, "Set to false if you're playing outside of GTNH")
+        isGTNH = config.get(GENERAL, "isGTNH", false, "Set to false if you're playing outside of GTNH")
                 .getBoolean();
 
         if (config.hasChanged()) {
