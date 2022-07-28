@@ -9,6 +9,8 @@ package vfyjxf.bettercrashes.utils;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import net.minecraft.client.Minecraft;
@@ -75,6 +77,26 @@ public class CrashUtils {
         File report = crashReport.getFile();
         if (report.exists()) {
             Desktop.getDesktop().open(report);
+        }
+    }
+
+    public static void openBrowser(URI uri) {
+        if (!Desktop.isDesktopSupported()) {
+            BetterCrashes.logger.error("Desktop is not supported");
+            return;
+        }
+        try {
+            Desktop.getDesktop().browse(uri);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openBrowser(String url) {
+        try {
+            openBrowser(new URI(url));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 }
