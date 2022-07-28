@@ -2,6 +2,7 @@ bettercrashes.gui.crash.toTitle=回到主菜单
 bettercrashes.gui.common.uploadReportAndCopyLink=上传并复制链接
 bettercrashes.gui.common.openCrashReport=打开崩溃报告
 bettercrashes.gui.common.failed=[失败]
+#bettercrashes.gui.common.uploading=Uploading...
 #bettercrashes.gui.common.gtnhIssueTracker=Open GTNH issue tracker
 
 bettercrashes.gui.common.paragraph1=下列模组被认为可能是导致崩溃的原因：

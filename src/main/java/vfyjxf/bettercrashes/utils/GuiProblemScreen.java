@@ -11,9 +11,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,14 +24,13 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReport;
 import org.apache.commons.lang3.StringUtils;
-import vfyjxf.bettercrashes.BetterCrashes;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
 
 @SideOnly(Side.CLIENT)
 public abstract class GuiProblemScreen extends GuiScreen {
 
     protected final CrashReport report;
-    private String hasteLink = null;
+    private volatile String hasteLink = null;
     private String modListString;
     protected static final List<String> UNSUPPORTED_MOD_IDS = Arrays.asList();
     protected List<String> detectedUnsupportedModNames;
@@ -86,27 +83,38 @@ public abstract class GuiProblemScreen extends GuiScreen {
         }
         if (button.id == 2) {
             if (hasteLink == null) {
-                try {
-                    hasteLink = CrashReportUpload.uploadToUbuntuPastebin(
-                            "https://paste.ubuntu.com", report.getCompleteReport());
-                } catch (IOException e) {
-                    button.displayString = I18n.format("bettercrashes.gui.common.failed");
-                    button.enabled = false;
-                    e.printStackTrace();
-                }
+                button.enabled = false;
+                button.displayString = I18n.format("bettercrashes.gui.common.uploading");
+                Thread thread = new Thread("BetterCrashes report uploading") {
+                    @Override
+                    public void run() {
+                        try {
+                            hasteLink = CrashReportUpload.uploadToUbuntuPastebin(
+                                    "https://paste.ubuntu.com", report.getCompleteReport());
+                            synchronized (button) {
+                                button.enabled = true;
+                                button.displayString = I18n.format("bettercrashes.gui.common.success");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            synchronized (button) {
+                                button.enabled = false;
+                                button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                            }
+                        }
+                    }
+                };
+                thread.start();
+            } else {
+                CrashUtils.openBrowser(hasteLink);
             }
-            setClipboardString(hasteLink);
+
+            if (hasteLink != null) {
+                setClipboardString(hasteLink);
+            }
         }
         if (button.id == 3) {
-            if (!Desktop.isDesktopSupported()) {
-                BetterCrashes.logger.error("Desktop is not supported");
-                return;
-            }
-            try {
-                Desktop.getDesktop().browse(new URI(GTNH_ISSUE_TRACKER));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            CrashUtils.openBrowser(GTNH_ISSUE_TRACKER);
         }
     }
 
