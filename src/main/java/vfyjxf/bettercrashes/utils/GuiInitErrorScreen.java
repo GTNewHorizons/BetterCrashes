@@ -74,16 +74,21 @@ public class GuiInitErrorScreen extends GuiProblemScreen {
 
         drawCenteredString(fontRendererObj, getModListString(), width / 2, y += 11, 0xE0E000);
 
-        drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph2"), x, y += 11, textColor);
+        if (isCrashLogExpectedToBeGenerated()) {
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph2"), x, y += 11, textColor);
 
-        drawCenteredString(
-                fontRendererObj,
-                report.getFile() != null
-                        ? "\u00A7n" + report.getFile().getName()
-                        : I18n.format("bettercrashes.gui.common.reportSaveFailed"),
-                width / 2,
-                y += 11,
-                0x00FF00);
+            drawCenteredString(
+                    fontRendererObj,
+                    report.getFile() != null
+                            ? "\u00A7n" + report.getFile().getName()
+                            : I18n.format("bettercrashes.gui.common.reportSaveFailed"),
+                    width / 2,
+                    y += 11,
+                    0x00FF00);
+        } else {
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph6"), x, y += 11, textColor);
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph7"), x, y += 11, textColor);
+        }
 
         y += 12;
         y += drawLongString(

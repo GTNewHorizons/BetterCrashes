@@ -15,6 +15,8 @@ bettercrashes.gui.common.paragraph3=You're encouraged to send this report's link
 bettercrashes.gui.common.paragraph3_gtnh=You're encouraged to send this report's link to the GTNH issue tracker to help us fix the issue, AFTER searching the tracker for similar issue already reported. Clicking the "Upload and Copy link" button can upload report and copy its link to clipboard. Since BetterCrashes is installed, you can keep playing despite the crash.
 bettercrashes.gui.common.paragraph4_gtnh=GTNH does not support the following mod(s):
 bettercrashes.gui.common.paragraph5_gtnh=When sending report, add mention to these as well.
+bettercrashes.gui.common.paragraph6=Number of crash logs exceeded limit and log was not generated.
+bettercrashes.gui.common.paragraph7=Limit can be changed via config.
 
 bettercrashes.gui.crash.title=Minecraft crashed!
 bettercrashes.gui.crash.summary=Minecraft ran into a problem and crashed.

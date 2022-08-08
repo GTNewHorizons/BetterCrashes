@@ -38,6 +38,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import vfyjxf.bettercrashes.BetterCrashesConfig;
 import vfyjxf.bettercrashes.utils.CrashUtils;
 import vfyjxf.bettercrashes.utils.GuiCrashScreen;
 import vfyjxf.bettercrashes.utils.GuiInitErrorScreen;
@@ -212,7 +213,9 @@ public abstract class MinecraftMixin {
      */
     public void displayCrashScreen(CrashReport report) {
         try {
-            CrashUtils.outputReport(report);
+            if (shouldGenerateCrashLog()) {
+                CrashUtils.outputReport(report);
+            }
 
             // Reset hasCrashed, debugCrashKeyPressTime, and crashIntegratedServerNextTick
             hasCrashed = false;
@@ -295,7 +298,9 @@ public abstract class MinecraftMixin {
      * @param report
      */
     public void displayInitErrorScreen(CrashReport report) {
-        CrashUtils.outputReport(report);
+        if (shouldGenerateCrashLog()) {
+            CrashUtils.outputReport(report);
+        }
         try {
             mcResourceManager = new SimpleReloadableResourceManager(metadataSerializer_);
             renderEngine = new TextureManager(mcResourceManager);
@@ -397,6 +402,13 @@ public abstract class MinecraftMixin {
      */
     @Overwrite
     public void displayCrashReport(CrashReport report) {
-        CrashUtils.outputReport(report);
+        if (shouldGenerateCrashLog()) {
+            CrashUtils.outputReport(report);
+        }
+    }
+
+    public boolean shouldGenerateCrashLog() {
+        return clientCrashCount <= BetterCrashesConfig.crashLogLimitClient
+                && serverCrashCount <= BetterCrashesConfig.crashLogLimitServer;
     }
 }
