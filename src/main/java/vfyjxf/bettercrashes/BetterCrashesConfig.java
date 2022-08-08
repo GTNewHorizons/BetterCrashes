@@ -1,5 +1,6 @@
 package vfyjxf.bettercrashes;
 
+import cpw.mods.fml.common.Loader;
 import java.io.File;
 import net.minecraftforge.common.config.Configuration;
 
@@ -9,7 +10,7 @@ public class BetterCrashesConfig {
 
     public static final String GENERAL = "General";
 
-    public static boolean isGTNH = true;
+    public static boolean isGTNH = Loader.isModLoaded("dreamcraft");
     public static int crashLogLimitClient = 30;
     public static int crashLogLimitServer = 30;
 
@@ -21,7 +22,6 @@ public class BetterCrashesConfig {
     public static void syncConfig() {
         config.setCategoryComment(GENERAL, "General config");
 
-        isGTNH = config.getBoolean("isGTNH", GENERAL, false, "Set to false if you're playing outside of GTNH");
         crashLogLimitClient = config.getInt(
                 "crashLogLimitClient",
                 GENERAL,
