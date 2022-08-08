@@ -53,7 +53,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
     protected static final List<String> UNSUPPORTED_MOD_IDS = Arrays.asList();
     protected List<String> detectedUnsupportedModNames;
     private static final String GTNH_ISSUE_TRACKER =
-            "https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/labels/Type%3A%20Crash";
+            "https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues?q=label%3A%22Type%3A+Crash%22";
 
     public GuiProblemScreen(CrashReport report) {
         this.report = report;
