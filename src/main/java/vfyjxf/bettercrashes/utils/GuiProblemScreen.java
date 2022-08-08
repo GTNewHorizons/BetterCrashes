@@ -6,6 +6,8 @@
 
 package vfyjxf.bettercrashes.utils;
 
+import static vfyjxf.bettercrashes.BetterCrashesConfig.isGTNH;
+
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
@@ -136,6 +138,72 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) {}
+
+    protected abstract String getScreenTitle();
+
+    protected abstract String getScreenSummary();
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (detectedUnsupportedModNames == null) {
+            detectedUnsupportedModNames = getUnsupportedMods();
+        }
+        boolean hasUnsupportedMods = !detectedUnsupportedModNames.isEmpty();
+
+        drawDefaultBackground();
+        drawCenteredString(
+                fontRendererObj,
+                getScreenTitle(),
+                width / 2,
+                height / 4 - 40 - (hasUnsupportedMods ? 16 : 0),
+                0xFFFFFF);
+
+        int textColor = 0xD0D0D0;
+        int x = width / 2 - 155;
+        int y = height / 4;
+        if (hasUnsupportedMods) {
+            y -= 32;
+        }
+
+        drawString(fontRendererObj, getScreenSummary(), x, y, textColor);
+        drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph1"), x, y += 18, textColor);
+
+        drawCenteredString(fontRendererObj, getModListString(), width / 2, y += 11, 0xE0E000);
+
+        if (isCrashLogExpectedToBeGenerated()) {
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph2"), x, y += 11, textColor);
+
+            drawCenteredString(
+                    fontRendererObj,
+                    report.getFile() != null
+                            ? "\u00A7n" + report.getFile().getName()
+                            : I18n.format("bettercrashes.gui.common.reportSaveFailed"),
+                    width / 2,
+                    y += 11,
+                    0x00FF00);
+        } else {
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph6"), x, y += 11, textColor);
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph7"), x, y += 11, textColor);
+        }
+
+        y += 12;
+        y += drawLongString(
+                fontRendererObj,
+                I18n.format("bettercrashes.gui.common.paragraph3" + (isGTNH ? "_gtnh" : "")),
+                x,
+                y,
+                340,
+                textColor);
+
+        if (hasUnsupportedMods) {
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph4_gtnh"), x, y += 10, textColor);
+            drawCenteredString(
+                    fontRendererObj, StringUtils.join(detectedUnsupportedModNames, ", "), width / 2, y += 11, 0xE0E000);
+            drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph5_gtnh"), x, y += 12, textColor);
+        }
+
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
 
     protected String getModListString() {
         if (modListString == null) {
