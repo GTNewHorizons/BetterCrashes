@@ -56,7 +56,6 @@ public final class ModIdentifier {
         // Get the URL of the class
         final String untrasformedName = untransformName(Launch.classLoader, className);
         URL url = Launch.classLoader.getResource(untrasformedName.replace('.', '/') + ".class");
-        log.debug(className + " = " + untrasformedName + " = " + url);
         if (url == null) {
             log.warn("Failed to identify " + className + " (untransformed name: " + untrasformedName + ")");
             return Collections.emptySet();
