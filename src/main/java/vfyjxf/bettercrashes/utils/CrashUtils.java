@@ -75,8 +75,10 @@ public class CrashUtils {
             return;
         }
         File report = crashReport.getFile();
-        if (report.exists()) {
+        if (report != null && report.exists()) {
             Desktop.getDesktop().open(report);
+        } else {
+            BetterCrashes.logger.error("Crash report was not generated");
         }
     }
 
