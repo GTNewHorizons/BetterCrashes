@@ -67,7 +67,7 @@ public final class ModIdentifier {
                 url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
             return modMap.get(new File(url.toURI()).getCanonicalFile());
         } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Exception processing URL " + url, e);
         }
     }
 
