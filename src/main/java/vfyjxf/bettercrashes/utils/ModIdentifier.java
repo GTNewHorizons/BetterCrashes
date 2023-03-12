@@ -9,6 +9,7 @@ package vfyjxf.bettercrashes.utils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -19,6 +20,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import vfyjxf.bettercrashes.BetterCrashes;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 
@@ -67,11 +69,18 @@ public final class ModIdentifier {
 
         // Get the mod containing that class
         try {
-            if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
-            return modMap.get(new File(url.toURI()).getCanonicalFile());
+            if (url.getProtocol().equals("jar")) {
+                url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
+            }
+            URI uri = url.toURI();
+            if (uri.getScheme() != null && uri.getScheme().equalsIgnoreCase("file")) {
+                return modMap.get(new File(uri).getCanonicalFile());
+            }
         } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException("Exception processing URL " + url, e);
+            BetterCrashes.logger.error("Error processing URL " + url);
+            e.printStackTrace();
         }
+        return Collections.emptySet();
     }
 
     private static Map<File, Set<ModContainer>> makeModMap() {
