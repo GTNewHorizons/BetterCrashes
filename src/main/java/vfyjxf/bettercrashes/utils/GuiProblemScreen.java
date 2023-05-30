@@ -25,12 +25,12 @@ import net.minecraft.crash.CrashReport;
 
 import org.apache.commons.lang3.StringUtils;
 
-import vfyjxf.bettercrashes.BetterCrashesConfig;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import vfyjxf.bettercrashes.BetterCrashesConfig;
 
 @SideOnly(Side.CLIENT)
 public abstract class GuiProblemScreen extends GuiScreen {

@@ -20,9 +20,9 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import vfyjxf.bettercrashes.BetterCrashes;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
+import vfyjxf.bettercrashes.BetterCrashes;
 
 /**
  * @author Runemoro

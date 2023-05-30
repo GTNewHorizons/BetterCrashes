@@ -39,13 +39,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import cpw.mods.fml.client.SplashProgress;
+import cpw.mods.fml.common.Loader;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
 import vfyjxf.bettercrashes.utils.CrashUtils;
 import vfyjxf.bettercrashes.utils.GuiCrashScreen;
 import vfyjxf.bettercrashes.utils.GuiInitErrorScreen;
 import vfyjxf.bettercrashes.utils.StateManager;
-import cpw.mods.fml.client.SplashProgress;
-import cpw.mods.fml.common.Loader;
 
 /**
  * @author Runemoro
