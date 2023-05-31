@@ -10,6 +10,7 @@ import static vfyjxf.bettercrashes.BetterCrashesConfig.isGTNH;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
+import vfyjxf.bettercrashes.upload.CrashReportUpload;
 
 @SideOnly(Side.CLIENT)
 public abstract class GuiProblemScreen extends GuiScreen {
@@ -51,7 +53,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
     }
 
     protected final CrashReport report;
-    private volatile String hasteLink = null;
+    private volatile URL pasteLink = null;
     private String modListString;
     protected static final List<String> UNSUPPORTED_MOD_IDS = Arrays.asList();
     protected List<String> detectedUnsupportedModNames;
@@ -105,7 +107,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
             }
         }
         if (button.id == 2) {
-            if (hasteLink == null) {
+            if (pasteLink == null) {
                 button.enabled = false;
                 button.displayString = I18n.format("bettercrashes.gui.common.uploading");
                 Thread thread = new Thread("BetterCrashes report uploading") {
@@ -113,8 +115,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
                     @Override
                     public void run() {
                         try {
-                            hasteLink = CrashReportUpload
-                                    .uploadToUbuntuPastebin("https://paste.ubuntu.com", report.getCompleteReport());
+                            pasteLink = CrashReportUpload.uploadToPastebin(report.getCompleteReport());
                             synchronized (button) {
                                 button.enabled = true;
                                 button.displayString = I18n.format("bettercrashes.gui.common.success");
@@ -130,11 +131,11 @@ public abstract class GuiProblemScreen extends GuiScreen {
                 };
                 thread.start();
             } else {
-                CrashUtils.openBrowser(hasteLink);
+                CrashUtils.openBrowser(pasteLink.toString());
             }
 
-            if (hasteLink != null) {
-                setClipboardString(hasteLink);
+            if (pasteLink != null) {
+                setClipboardString(pasteLink.toString());
             }
         }
         if (button.id == 3) {
