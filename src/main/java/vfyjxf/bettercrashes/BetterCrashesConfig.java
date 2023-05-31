@@ -1,10 +1,10 @@
 package vfyjxf.bettercrashes;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import net.minecraftforge.common.config.Configuration;
-
-import cpw.mods.fml.common.Loader;
 
 public class BetterCrashesConfig {
 
@@ -12,10 +12,11 @@ public class BetterCrashesConfig {
 
     public static final String GENERAL = "General";
 
-    public static boolean isGTNH = Loader.isModLoaded("dreamcraft");
     public static int crashLogLimitClient = 30;
     public static int crashLogLimitServer = 30;
     public static String crashLogPasteService;
+    public static String issueTrackerURL;
+    public static List<String> unsupportedMods;
 
     public static void init(File file) {
         config = new Configuration(file);
@@ -44,6 +45,13 @@ public class BetterCrashesConfig {
                 GENERAL,
                 "mclo.gs",
                 "Service to use for uploading crashlogs. Currently, only mclo.gs is currently supported.");
+        issueTrackerURL = config.getString("issueTrackerURL", GENERAL, "", "Link to a bug tracker.");
+        unsupportedMods = Arrays.asList(
+                config.getStringList(
+                        "unsupportedMods",
+                        GENERAL,
+                        new String[] { "Optifine" },
+                        "List of modids of mods that are not supported by the modpack. BetterCrashes will encourage the player to mention those specifically in their bug report."));
 
         if (config.hasChanged()) {
             config.save();
