@@ -21,12 +21,14 @@ import java.util.zip.ZipInputStream;
  */
 public final class StacktraceDeobfuscator {
 
+    private static final String MAPPING_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp_stable/12-1.7.10/mcp_stable-12-1.7.10.zip";
+
     private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to set
                                                        // to false when done!
     private static HashMap<String, String> srgMcpMethodMap = null;
 
     /**
-     * If the file does not exits, downloads latest method mappings and saves them to it. Initializes a HashMap between
+     * If the file does not exist, downloads latest method mappings and saves them to it. Initializes a HashMap between
      * obfuscated and deobfuscated names from that file.
      */
     public static void init(File mappings) {
@@ -36,8 +38,7 @@ public final class StacktraceDeobfuscator {
         if (!mappings.exists()) {
             HttpURLConnection connection = null;
             try {
-                URL mappingsURL = new URL(
-                        "http://export.mcpbot.bspk.rs/mcp_stable_nodoc/39-1.12/mcp_stable_nodoc-39-1.12.zip");
+                URL mappingsURL = new URL(MAPPING_URL);
                 connection = (HttpURLConnection) mappingsURL.openConnection();
                 connection.setDoInput(true);
                 connection.connect();
