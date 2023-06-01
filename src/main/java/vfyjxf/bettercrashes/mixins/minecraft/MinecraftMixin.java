@@ -234,7 +234,7 @@ public abstract class MinecraftMixin {
         } catch (Throwable t) {
             // The crash screen has crashed. Report it normally instead.
             logger.error(
-                    "An uncaught exception occured while displaying the crash screen, making normal report instead",
+                    "An uncaught exception occurred while displaying the crash screen, making normal report instead",
                     t);
             displayCrashReport(report);
             System.exit(report.getFile() != null ? -1 : -2);

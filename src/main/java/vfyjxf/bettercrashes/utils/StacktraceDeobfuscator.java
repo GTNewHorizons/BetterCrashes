@@ -6,6 +6,9 @@
 
 package vfyjxf.bettercrashes.utils;
 
+import static vfyjxf.bettercrashes.BetterCrashes.NAME;
+import static vfyjxf.bettercrashes.BetterCrashes.VERSION;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,19 +19,25 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
+
+import vfyjxf.bettercrashes.BetterCrashes;
+
 /**
  * @author Runemoro
  */
 public final class StacktraceDeobfuscator {
 
     private static final String MAPPING_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp_stable/12-1.7.10/mcp_stable-12-1.7.10.zip";
+    private static final String MAPPING_METHODS_CSV_HASH = "ba91c6bcd9a76ba4400729e0b3232daf0d4c47abed708c758318927540a33121"; // sha256
 
     private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to set
                                                        // to false when done!
     private static HashMap<String, String> srgMcpMethodMap = null;
 
     /**
-     * If the file does not exist, downloads latest method mappings and saves them to it. Initializes a HashMap between
+     * If the file does not exist, downloads method mappings and saves them to it. Initializes a HashMap between
      * obfuscated and deobfuscated names from that file.
      */
     public static void init(File mappings) {
@@ -36,33 +45,55 @@ public final class StacktraceDeobfuscator {
 
         // Download the file if necessary
         if (!mappings.exists()) {
+            BetterCrashes.logger.info("Downloading MCP method mappings to deobfuscate stacktrace");
             HttpURLConnection connection = null;
             try {
                 URL mappingsURL = new URL(MAPPING_URL);
                 connection = (HttpURLConnection) mappingsURL.openConnection();
                 connection.setDoInput(true);
+                connection.setReadTimeout(20000);
+                connection.setConnectTimeout(50000);
+                connection.setRequestProperty("User-Agent", String.format("%s/%s", NAME, VERSION));
                 connection.connect();
                 try (InputStream inputStream = connection.getInputStream()) {
                     ZipInputStream zipInputStream = new ZipInputStream(inputStream);
                     ZipEntry entry;
                     while ((entry = zipInputStream.getNextEntry()) != null) {
                         if (entry.getName().equals("methods.csv")) {
+                            boolean downloadInvalid = false;
+
                             try (FileOutputStream out = new FileOutputStream(mappings)) {
+                                Hasher hasher = Hashing.sha256().newHasher();
                                 byte[] buffer = new byte[2048];
                                 int len;
                                 while ((len = zipInputStream.read(buffer)) > 0) {
                                     out.write(buffer, 0, len);
+                                    hasher.putBytes(buffer, 0, len);
                                 }
+
+                                if (!hasher.hash().toString().equals(MAPPING_METHODS_CSV_HASH)) {
+                                    downloadInvalid = true;
+                                    BetterCrashes.logger.warn(
+                                            "Downloaded MCP mapping method.csv does not match expected hash. Skipping deobfuscation...");
+                                    return;
+                                }
+                            }
+
+                            if (downloadInvalid) {
+                                mappings.delete();
                             }
                             break;
                         }
                     }
                     if (entry == null) {
-                        throw new RuntimeException("Downloaded zip did not contain methods.csv");
+                        BetterCrashes.logger.warn(
+                                "Downloaded MCP mappings zip did not contain methods.csv. Skipping deobfuscation...");
+                        return;
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                BetterCrashes.logger.warn("Failed downloading MCP mappings. Skipping deobfuscation...");
+                return;
             } finally {
                 if (connection != null) connection.disconnect();
             }
@@ -86,8 +117,11 @@ public final class StacktraceDeobfuscator {
                     srgMcpMethodMap.put(mcpName, srgName);
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | IndexOutOfBoundsException e) {
+            BetterCrashes.logger.warn(
+                    "Failed to parse {}. Possible corruption. Please delete to trigger redownload.",
+                    mappings.getName());
+            return;
         }
 
         // Set the map only if it's successful, to make sure that it's complete

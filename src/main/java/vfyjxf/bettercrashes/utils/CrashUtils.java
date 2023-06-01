@@ -83,7 +83,7 @@ public class CrashUtils {
 
     public static void openBrowser(URI uri) {
         if (!Desktop.isDesktopSupported()) {
-            BetterCrashes.logger.error("Desktop is not supported");
+            BetterCrashes.logger.error("Desktop is not supported. Cannot open link in browser.");
             return;
         }
         try {

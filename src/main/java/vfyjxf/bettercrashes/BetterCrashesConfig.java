@@ -17,6 +17,7 @@ public class BetterCrashesConfig {
     public static String crashLogPasteService;
     public static String issueTrackerURL;
     public static List<String> unsupportedMods;
+    public static boolean stacktraceDeobfuscation = false;
 
     public static void init(File file) {
         config = new Configuration(file);
@@ -52,6 +53,11 @@ public class BetterCrashesConfig {
                         GENERAL,
                         new String[] { "Optifine" },
                         "List of modids of mods that are not supported by the modpack. BetterCrashes will encourage the player to mention those specifically in their bug report."));
+        stacktraceDeobfuscation = config.getBoolean(
+                "stacktraceDeobfuscation",
+                GENERAL,
+                false,
+                "Enables clearer stacktraces by deobfuscating vanilla methods using MCP.");
 
         if (config.hasChanged()) {
             config.save();
