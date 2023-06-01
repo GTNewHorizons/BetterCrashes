@@ -6,9 +6,6 @@
 
 package vfyjxf.bettercrashes.utils;
 
-import static vfyjxf.bettercrashes.BetterCrashes.NAME;
-import static vfyjxf.bettercrashes.BetterCrashes.VERSION;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,11 +46,8 @@ public final class StacktraceDeobfuscator {
             HttpURLConnection connection = null;
             try {
                 URL mappingsURL = new URL(MAPPING_URL);
-                connection = (HttpURLConnection) mappingsURL.openConnection();
+                connection = HttpUtils.createConnection(mappingsURL);
                 connection.setDoInput(true);
-                connection.setReadTimeout(20000);
-                connection.setConnectTimeout(50000);
-                connection.setRequestProperty("User-Agent", String.format("%s/%s", NAME, VERSION));
                 connection.connect();
                 try (InputStream inputStream = connection.getInputStream()) {
                     ZipInputStream zipInputStream = new ZipInputStream(inputStream);
@@ -75,12 +69,12 @@ public final class StacktraceDeobfuscator {
                                     downloadInvalid = true;
                                     BetterCrashes.logger.warn(
                                             "Downloaded MCP mapping method.csv does not match expected hash. Skipping deobfuscation...");
-                                    return;
                                 }
                             }
 
                             if (downloadInvalid) {
                                 mappings.delete();
+                                return;
                             }
                             break;
                         }

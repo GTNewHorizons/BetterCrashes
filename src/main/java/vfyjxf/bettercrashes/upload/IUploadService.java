@@ -7,11 +7,10 @@ public interface IUploadService {
 
     /**
      * Upload crash report to pastebin service
-     * 
-     * @param contents         crash report
-     * @param clientIdentifier
+     *
+     * @param contents crash report
      * @return URL pointing to the uploaded crash report
      * @throws IOException
      */
-    URL upload(String contents, String clientIdentifier) throws IOException;
+    URL upload(String contents) throws IOException;
 }

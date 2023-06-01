@@ -26,6 +26,6 @@ public class CrashReportUpload {
             selectedService = services.get(DEFAULT_SERVICE);
         }
 
-        return selectedService.upload(crashReport, null);
+        return selectedService.upload(crashReport);
     }
 }
