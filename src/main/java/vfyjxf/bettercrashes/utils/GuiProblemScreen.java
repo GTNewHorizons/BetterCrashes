@@ -22,6 +22,7 @@ import net.minecraft.crash.CrashReport;
 
 import org.apache.commons.lang3.StringUtils;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
@@ -108,7 +109,10 @@ public abstract class GuiProblemScreen extends GuiScreen {
                     @Override
                     public void run() {
                         try {
-                            pasteLink = CrashReportUpload.uploadToPastebin(report.getCompleteReport());
+                            pasteLink = CrashReportUpload.uploadCrashReport(report.getCompleteReport());
+                            if (pasteLink != null) {
+                                setClipboardString(pasteLink.toString());
+                            }
                             synchronized (button) {
                                 button.enabled = true;
                                 button.displayString = I18n.format("bettercrashes.gui.common.success");
@@ -127,9 +131,6 @@ public abstract class GuiProblemScreen extends GuiScreen {
                 CrashUtils.openBrowser(pasteLink.toString());
             }
 
-            if (pasteLink != null) {
-                setClipboardString(pasteLink.toString());
-            }
         }
         if (button.id == 3) {
             CrashUtils.openBrowser(BetterCrashesConfig.issueTrackerURL);
@@ -231,12 +232,17 @@ public abstract class GuiProblemScreen extends GuiScreen {
     }
 
     protected List<String> getUnsupportedMods() {
-        List<String> unsupportedMods = BetterCrashesConfig.unsupportedMods;
         List<String> installedUnsupportedMods = new ArrayList<>();
         for (ModContainer mod : Loader.instance().getModList()) {
-            if (unsupportedMods.contains(mod.getModId())) {
+            if (BetterCrashesConfig.unsupportedMods.contains(mod.getModId())) {
                 installedUnsupportedMods.add(mod.getName());
             }
+        }
+
+        // Due to the nature of Optifine, it will very often need special
+        // consideration in bug reports.
+        if (FMLClientHandler.instance().hasOptifine()) {
+            installedUnsupportedMods.add("Optifine");
         }
 
         return installedUnsupportedMods;

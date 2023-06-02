@@ -51,12 +51,12 @@ public class BetterCrashesConfig {
                 config.getStringList(
                         "unsupportedMods",
                         GENERAL,
-                        new String[] { "Optifine" },
-                        "List of modids of mods that are not supported by the modpack. BetterCrashes will encourage the player to mention those specifically in their bug report."));
+                        new String[] {},
+                        "List of modids of mods that are not supported by the modpack. BetterCrashes will encourage the player to mention those specifically in their bug report. Optifine will always be detected."));
         stacktraceDeobfuscation = config.getBoolean(
                 "stacktraceDeobfuscation",
                 GENERAL,
-                false,
+                true,
                 "Enables clearer stacktraces by deobfuscating vanilla methods using MCP.");
 
         if (config.hasChanged()) {

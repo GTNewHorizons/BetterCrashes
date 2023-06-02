@@ -17,12 +17,12 @@ public class CrashReportUpload {
         services.put("mclo.gs", new MclogsUploadService());
     }
 
-    public static URL uploadToPastebin(String crashReport) throws IOException {
+    public static URL uploadCrashReport(String crashReport) throws IOException {
         String service = BetterCrashesConfig.crashLogPasteService;
         IUploadService selectedService = services.get(service);
         if (selectedService == null) {
             BetterCrashes.logger.warn(
-                    String.format("Unknown upload service  \"%s\", falling back to \"%s\"", service, DEFAULT_SERVICE));
+                    String.format("Unknown upload service \"%s\", falling back to \"%s\"", service, DEFAULT_SERVICE));
             selectedService = services.get(DEFAULT_SERVICE);
         }
 
