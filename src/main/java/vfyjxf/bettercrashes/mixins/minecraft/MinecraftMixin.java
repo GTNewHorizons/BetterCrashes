@@ -12,7 +12,11 @@ import java.util.Queue;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -209,8 +213,8 @@ public abstract class MinecraftMixin {
     }
 
     /**
-     * @author Runemoro
      * @param report
+     * @author Runemoro
      */
     public void displayCrashScreen(CrashReport report) {
         try {
@@ -290,8 +294,8 @@ public abstract class MinecraftMixin {
     }
 
     /**
-     * @author Runemoro
      * @param report
+     * @author Runemoro
      */
     public void displayInitErrorScreen(CrashReport report) {
         if (shouldGenerateCrashLog()) {
@@ -332,8 +336,8 @@ public abstract class MinecraftMixin {
     }
 
     /**
-     * @author Runemoro
      * @param screen
+     * @author Runemoro
      */
     private void runGUILoop(GuiScreen screen) throws IOException {
         displayGuiScreen(screen);
@@ -395,9 +399,9 @@ public abstract class MinecraftMixin {
     }
 
     /**
+     * @param report
      * @author Runemoro
      * @reason
-     * @param report
      */
     @Overwrite
     public void displayCrashReport(CrashReport report) {

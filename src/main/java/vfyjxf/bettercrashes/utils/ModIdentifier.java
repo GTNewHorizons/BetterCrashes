@@ -12,7 +12,12 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -98,7 +103,7 @@ public final class ModIdentifier {
         try {
             modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
             modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML,
-                                                                                         // forge)
+            // forge)
         } catch (NullPointerException ignored) {
             // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
         }
