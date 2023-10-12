@@ -12,7 +12,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -28,7 +33,7 @@ public final class StacktraceDeobfuscator {
     private static final String MAPPING_METHODS_CSV_HASH = "63de115ead3e848e529de81e81ada9dff694e50fb5c6d92ec1e9037fe50ca191"; // sha256
 
     private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to set
-                                                       // to false when done!
+    // to false when done!
     private static HashMap<String, String> srgMcpMethodMap = null;
 
     /**

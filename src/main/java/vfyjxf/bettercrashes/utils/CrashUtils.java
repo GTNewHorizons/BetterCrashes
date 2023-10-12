@@ -6,7 +6,7 @@
 
 package vfyjxf.bettercrashes.utils;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -25,8 +25,8 @@ import vfyjxf.bettercrashes.BetterCrashes;
 public class CrashUtils {
 
     /**
-     * @author Runemoro
      * @param report
+     * @author Runemoro
      */
     public static void outputReport(CrashReport report) {
         try {
@@ -63,9 +63,9 @@ public class CrashUtils {
     }
 
     /**
-     * @author vfyjxf
      * @param crashReport
      * @throws IOException
+     * @author vfyjxf
      */
     public static void openCrashReport(CrashReport crashReport) throws IOException {
 
