@@ -205,7 +205,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     protected String getModListString() {
         if (modListString == null) {
-            final Set<ModContainer> suspectedMods = ((IPatchedCrashReport) report).getSuspectedMods();
+            final Set<ModContainer> suspectedMods = ((IPatchedCrashReport) report).betterCrashes$getSuspectedMods();
             if (suspectedMods == null) {
                 return modListString = I18n.format("bettercrashes.gui.common.identificationErrored");
             }
