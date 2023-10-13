@@ -15,5 +15,5 @@ import cpw.mods.fml.common.ModContainer;
  */
 public interface IPatchedCrashReport {
 
-    Set<ModContainer> getSuspectedMods();
+    Set<ModContainer> betterCrashes$getSuspectedMods();
 }

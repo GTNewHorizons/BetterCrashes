@@ -6,8 +6,6 @@
 
 package vfyjxf.bettercrashes.mixins.early;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Queue;
 
 import net.minecraft.client.Minecraft;
@@ -42,6 +40,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import cpw.mods.fml.client.SplashProgress;
 import cpw.mods.fml.common.Loader;
@@ -88,9 +87,6 @@ public abstract class MinecraftMixin {
 
     @Shadow
     public GuiIngame ingameGUI;
-
-    @Shadow
-    private List defaultResourcePacks;
 
     @Shadow
     private IReloadableResourceManager mcResourceManager;
@@ -159,8 +155,11 @@ public abstract class MinecraftMixin {
     @Shadow
     public abstract void func_147120_f(); // func_147120_f --> resetSize
 
-    private int clientCrashCount = 0;
-    private int serverCrashCount = 0;
+    @Unique
+    private int betterCrashes$clientCrashCount = 0;
+
+    @Unique
+    private int betterCrashes$serverCrashCount = 0;
 
     /**
      * @author Runemoro
@@ -174,7 +173,7 @@ public abstract class MinecraftMixin {
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.makeCrashReport(throwable, "Initializing game");
             crashReport.makeCategory("Initialization");
-            displayInitErrorScreen(addGraphicsAndWorldToCrashReport(crashReport));
+            betterCrashes$displayInitErrorScreen(addGraphicsAndWorldToCrashReport(crashReport));
             return;
         }
         try {
@@ -183,26 +182,26 @@ public abstract class MinecraftMixin {
                     try {
                         runGameLoop();
                     } catch (ReportedException e) {
-                        clientCrashCount++;
+                        betterCrashes$clientCrashCount++;
                         addGraphicsAndWorldToCrashReport(e.getCrashReport());
-                        addInfoToCrash(e.getCrashReport());
-                        resetGameState();
+                        betterCrashes$addInfoToCrash(e.getCrashReport());
+                        betterCrashes$resetGameState();
                         logger.fatal("Reported exception thrown!", e);
-                        displayCrashScreen(e.getCrashReport());
+                        betterCrashes$displayCrashScreen(e.getCrashReport());
                     } catch (Throwable e) {
-                        clientCrashCount++;
+                        betterCrashes$clientCrashCount++;
                         CrashReport report = new CrashReport("Unexpected error", e);
                         addGraphicsAndWorldToCrashReport(report);
-                        addInfoToCrash(report);
-                        resetGameState();
+                        betterCrashes$addInfoToCrash(report);
+                        betterCrashes$resetGameState();
                         logger.fatal("Unreported exception thrown!", e);
-                        displayCrashScreen(report);
+                        betterCrashes$displayCrashScreen(report);
                     }
                 } else {
-                    serverCrashCount++;
-                    addInfoToCrash(crashReporter);
+                    betterCrashes$serverCrashCount++;
+                    betterCrashes$addInfoToCrash(crashReporter);
                     freeMemory();
-                    displayCrashScreen(crashReporter);
+                    betterCrashes$displayCrashScreen(crashReporter);
                     hasCrashed = false;
                     crashReporter = null;
                 }
@@ -213,12 +212,20 @@ public abstract class MinecraftMixin {
     }
 
     /**
-     * @param report
      * @author Runemoro
+     * @reason Overwrite Minecraft.displayCrashReport
      */
-    public void displayCrashScreen(CrashReport report) {
+    @Overwrite
+    public void displayCrashReport(CrashReport report) {
+        if (betterCrashes$shouldGenerateCrashLog()) {
+            CrashUtils.outputReport(report);
+        }
+    }
+
+    @Unique
+    private void betterCrashes$displayCrashScreen(CrashReport report) {
         try {
-            if (shouldGenerateCrashLog()) {
+            if (betterCrashes$shouldGenerateCrashLog()) {
                 CrashUtils.outputReport(report);
             }
 
@@ -245,18 +252,21 @@ public abstract class MinecraftMixin {
         }
     }
 
-    private void addInfoToCrash(CrashReport crashReport) {
-        crashReport.getCategory()
-                .addCrashSectionCallable("Client Crashes Since Restart", () -> String.valueOf(clientCrashCount));
+    @Unique
+    private void betterCrashes$addInfoToCrash(CrashReport crashReport) {
+        crashReport.getCategory().addCrashSectionCallable(
+                "Client Crashes Since Restart",
+                () -> String.valueOf(betterCrashes$clientCrashCount));
         crashReport.getCategory().addCrashSectionCallable(
                 "Integrated Server Crashes Since Restart",
-                () -> String.valueOf(serverCrashCount));
+                () -> String.valueOf(betterCrashes$serverCrashCount));
     }
 
     /**
      * @author Runemoro
      */
-    public void resetGameState() {
+    @Unique
+    private void betterCrashes$resetGameState() {
         try {
             // Free up memory such that this works properly in case of an OutOfMemoryError
             int originalMemoryReserveSize = -1;
@@ -294,11 +304,11 @@ public abstract class MinecraftMixin {
     }
 
     /**
-     * @param report
      * @author Runemoro
      */
-    public void displayInitErrorScreen(CrashReport report) {
-        if (shouldGenerateCrashLog()) {
+    @Unique
+    private void betterCrashes$displayInitErrorScreen(CrashReport report) {
+        if (betterCrashes$shouldGenerateCrashLog()) {
             CrashUtils.outputReport(report);
         }
         try {
@@ -325,7 +335,7 @@ public abstract class MinecraftMixin {
                 // noinspection deprecation
                 SplashProgress.finish(); // Disable the forge splash progress screen
             } catch (Throwable ignored) {}
-            runGUILoop(new GuiInitErrorScreen(report));
+            betterCrashes$runGUILoop(new GuiInitErrorScreen(report));
         } catch (Throwable t) {
             logger.error(
                     "An uncaught exception occured while displaying the init error screen, making normal report instead",
@@ -336,10 +346,10 @@ public abstract class MinecraftMixin {
     }
 
     /**
-     * @param screen
      * @author Runemoro
      */
-    private void runGUILoop(GuiScreen screen) throws IOException {
+    @Unique
+    private void betterCrashes$runGUILoop(GuiScreen screen) {
         displayGuiScreen(screen);
         while (running && currentScreen != null
                 && !(currentScreen instanceof GuiMainMenu)
@@ -398,20 +408,9 @@ public abstract class MinecraftMixin {
         }
     }
 
-    /**
-     * @param report
-     * @author Runemoro
-     * @reason
-     */
-    @Overwrite
-    public void displayCrashReport(CrashReport report) {
-        if (shouldGenerateCrashLog()) {
-            CrashUtils.outputReport(report);
-        }
-    }
-
-    public boolean shouldGenerateCrashLog() {
-        return clientCrashCount <= BetterCrashesConfig.crashLogLimitClient
-                && serverCrashCount <= BetterCrashesConfig.crashLogLimitServer;
+    @Unique
+    private boolean betterCrashes$shouldGenerateCrashLog() {
+        return betterCrashes$clientCrashCount <= BetterCrashesConfig.crashLogLimitClient
+                && betterCrashes$serverCrashCount <= BetterCrashesConfig.crashLogLimitServer;
     }
 }
