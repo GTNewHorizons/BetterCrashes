@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -60,23 +61,33 @@ public class CrashReportMixin implements IPatchedCrashReport {
         return null;
     }
 
-    private Set<ModContainer> suspectedMods;
+    @Unique
+    private Set<ModContainer> betterCrashes$suspectedMods;
 
     @Override
-    public Set<ModContainer> getSuspectedMods() {
-        return suspectedMods;
+    public Set<ModContainer> betterCrashes$getSuspectedMods() {
+        return betterCrashes$suspectedMods;
+    }
+
+    /** @reason Deobfuscates the stacktrace using MCP mappings */
+    @Inject(method = "populateEnvironment", at = @At("HEAD"))
+    private void betterCrashes$beforePopulateEnvironment(CallbackInfo ci) {
+        if (BetterCrashesConfig.stacktraceDeobfuscation) {
+            StacktraceDeobfuscator.init(new File(String.format("%s-stackdeobfuscator-methods.csv", MODID)));
+        }
+        StacktraceDeobfuscator.deobfuscateThrowable(cause);
     }
 
     /** @reason Adds a list of mods which may have caused the crash to the report. */
     @Inject(method = "populateEnvironment", at = @At("TAIL"))
-    private void afterPopulateEnvironment(CallbackInfo ci) {
+    private void betterCrashes$afterPopulateEnvironment(CallbackInfo ci) {
         theReportCategory.addCrashSectionCallable("Suspected Mods", () -> {
             try {
-                suspectedMods = ModIdentifier.identifyFromStacktrace(cause);
+                betterCrashes$suspectedMods = ModIdentifier.identifyFromStacktrace(cause);
 
                 String modListString = "Unknown";
                 List<String> modNames = new ArrayList<>();
-                for (ModContainer mod : suspectedMods) {
+                for (ModContainer mod : betterCrashes$suspectedMods) {
                     modNames.add(mod.getName() + " (" + mod.getModId() + ")");
                 }
 
@@ -90,15 +101,6 @@ public class CrashReportMixin implements IPatchedCrashReport {
         });
     }
 
-    /** @reason Deobfuscates the stacktrace using MCP mappings */
-    @Inject(method = "populateEnvironment", at = @At("HEAD"))
-    private void beforePopulateEnvironment(CallbackInfo ci) {
-        if (BetterCrashesConfig.stacktraceDeobfuscation) {
-            StacktraceDeobfuscator.init(new File(String.format("%s-stackdeobfuscator-methods.csv", MODID)));
-        }
-        StacktraceDeobfuscator.deobfuscateThrowable(cause);
-    }
-
     /**
      * @reason Improve report formatting
      * @author Runemoro
@@ -106,11 +108,13 @@ public class CrashReportMixin implements IPatchedCrashReport {
     @Overwrite
     public String getCompleteReport() {
         StringBuilder builder = new StringBuilder();
-
-        builder.append("---- Minecraft Crash Report ----\n").append("// ").append(getVanillaFixComment()).append("\n\n")
-                .append("Time: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date())).append("\n")
+        builder.append("---- Minecraft Crash Report ----\n").append("// ").append(betterCrashes$getVanillaFixComment())
+                .append("\n\n").append("Time: ")
+                .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date())).append("\n")
                 .append("Description: ").append(description).append("\n\n")
-                .append(stacktraceToString(cause).replace("\t", "    ")) // Vanilla's getCauseStackTraceOrString doesn't
+                .append(betterCrashes$stacktraceToString(cause).replace("\t", "    ")) // Vanilla's
+                                                                                       // getCauseStackTraceOrString
+                                                                                       // doesn't
                 // print causes and suppressed
                 // exceptions
                 .append(
@@ -125,7 +129,8 @@ public class CrashReportMixin implements IPatchedCrashReport {
         return builder.toString().replace("\t", "    ");
     }
 
-    private static String stacktraceToString(Throwable cause) {
+    @Unique
+    private static String betterCrashes$stacktraceToString(Throwable cause) {
         StringWriter writer = new StringWriter();
         cause.printStackTrace(new PrintWriter(writer));
         return writer.toString();
@@ -141,19 +146,18 @@ public class CrashReportMixin implements IPatchedCrashReport {
             crashreportcategory.appendToStringBuilder(builder);
             builder.append("\n");
         }
-
         theReportCategory.appendToStringBuilder(builder);
     }
 
-    private String getVanillaFixComment() {
+    @Unique
+    private String betterCrashes$getVanillaFixComment() {
         try {
-            if (Math.random() < 0.01 && !suspectedMods.isEmpty()) {
-                ModContainer mod = suspectedMods.iterator().next();
+            if (Math.random() < 0.01 && !betterCrashes$suspectedMods.isEmpty()) {
+                ModContainer mod = betterCrashes$suspectedMods.iterator().next();
                 String author = mod.getMetadata().authorList.get(0);
                 return "I blame " + author + ".";
             }
         } catch (Throwable ignored) {}
-
         return getWittyComment();
     }
 }
