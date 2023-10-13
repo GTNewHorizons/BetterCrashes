@@ -4,7 +4,7 @@
  * client/MixinMinecraft.java The source file uses the MIT License.
  */
 
-package vfyjxf.bettercrashes.mixins.minecraft;
+package vfyjxf.bettercrashes.mixins.early;
 
 import java.io.IOException;
 import java.util.List;
