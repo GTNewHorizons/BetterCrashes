@@ -48,13 +48,14 @@ import vfyjxf.bettercrashes.BetterCrashesConfig;
 import vfyjxf.bettercrashes.utils.CrashUtils;
 import vfyjxf.bettercrashes.utils.GuiCrashScreen;
 import vfyjxf.bettercrashes.utils.GuiInitErrorScreen;
+import vfyjxf.bettercrashes.utils.IPatchedMinecraft;
 import vfyjxf.bettercrashes.utils.StateManager;
 
 /**
  * @author Runemoro
  */
 @Mixin(Minecraft.class)
-public abstract class MinecraftMixin {
+public abstract class MinecraftMixin implements IPatchedMinecraft {
 
     @Shadow
     @Final
@@ -220,6 +221,16 @@ public abstract class MinecraftMixin {
         if (betterCrashes$shouldGenerateCrashLog()) {
             CrashUtils.outputReport(report);
         }
+    }
+
+    @Override
+    public int betterCrashes$getClientCrashCount() {
+        return betterCrashes$clientCrashCount;
+    }
+
+    @Override
+    public int betterCrashes$getServerCrashCount() {
+        return betterCrashes$serverCrashCount;
     }
 
     @Unique

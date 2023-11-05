@@ -1,12 +1,8 @@
 package vfyjxf.bettercrashes.utils;
 
-import net.minecraft.crash.CrashReport;
-
 public interface IPatchedMinecraft {
 
-    boolean shouldCrashIntegratedServerNextTick();
+    int betterCrashes$getClientCrashCount();
 
-    void showWarningScreen(CrashReport report);
-
-    void makeErrorNotification(CrashReport report);
+    int betterCrashes$getServerCrashCount();
 }
