@@ -27,6 +27,8 @@ import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
+import vfyjxf.bettercrashes.mixins.interfaces.CrashReportExt;
+import vfyjxf.bettercrashes.mixins.interfaces.MinecraftExt;
 import vfyjxf.bettercrashes.upload.CrashReportUpload;
 
 @SideOnly(Side.CLIENT)
@@ -189,7 +191,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     protected String getModListString() {
         if (modListString == null) {
-            final Set<ModContainer> suspectedMods = ((IPatchedCrashReport) report).betterCrashes$getSuspectedMods();
+            final Set<ModContainer> suspectedMods = ((CrashReportExt) report).betterCrashes$getSuspectedMods();
             if (suspectedMods == null) {
                 return modListString = I18n.format("bettercrashes.gui.common.identificationErrored");
             }
@@ -238,10 +240,10 @@ public abstract class GuiProblemScreen extends GuiScreen {
     }
 
     private int getClientCrashCount() {
-        return ((IPatchedMinecraft) Minecraft.getMinecraft()).betterCrashes$getClientCrashCount();
+        return ((MinecraftExt) Minecraft.getMinecraft()).betterCrashes$getClientCrashCount();
     }
 
     private int getServerCrashCount() {
-        return ((IPatchedMinecraft) Minecraft.getMinecraft()).betterCrashes$getServerCrashCount();
+        return ((MinecraftExt) Minecraft.getMinecraft()).betterCrashes$getServerCrashCount();
     }
 }

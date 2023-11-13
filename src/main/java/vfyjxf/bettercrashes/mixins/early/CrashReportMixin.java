@@ -33,12 +33,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import cpw.mods.fml.common.ModContainer;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
-import vfyjxf.bettercrashes.utils.IPatchedCrashReport;
+import vfyjxf.bettercrashes.mixins.interfaces.CrashReportExt;
 import vfyjxf.bettercrashes.utils.ModIdentifier;
 import vfyjxf.bettercrashes.utils.StacktraceDeobfuscator;
 
 @Mixin(value = CrashReport.class, priority = 500)
-public class CrashReportMixin implements IPatchedCrashReport {
+public class CrashReportMixin implements CrashReportExt {
 
     @Shadow
     @Final

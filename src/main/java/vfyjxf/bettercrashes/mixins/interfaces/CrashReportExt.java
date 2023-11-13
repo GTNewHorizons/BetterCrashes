@@ -4,7 +4,7 @@
  * dimdev/vanillafix/crashes/IPatchedCrashReport.java The source file uses the MIT License.
  */
 
-package vfyjxf.bettercrashes.utils;
+package vfyjxf.bettercrashes.mixins.interfaces;
 
 import java.util.Set;
 
@@ -13,7 +13,7 @@ import cpw.mods.fml.common.ModContainer;
 /**
  * @author Runemoro
  */
-public interface IPatchedCrashReport {
+public interface CrashReportExt {
 
     Set<ModContainer> betterCrashes$getSuspectedMods();
 }

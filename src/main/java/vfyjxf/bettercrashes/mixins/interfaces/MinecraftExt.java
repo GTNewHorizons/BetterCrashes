@@ -1,6 +1,6 @@
-package vfyjxf.bettercrashes.utils;
+package vfyjxf.bettercrashes.mixins.interfaces;
 
-public interface IPatchedMinecraft {
+public interface MinecraftExt {
 
     int betterCrashes$getClientCrashCount();
 

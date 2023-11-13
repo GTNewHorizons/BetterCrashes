@@ -45,17 +45,17 @@ import org.spongepowered.asm.mixin.Unique;
 import cpw.mods.fml.client.SplashProgress;
 import cpw.mods.fml.common.Loader;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
+import vfyjxf.bettercrashes.mixins.interfaces.MinecraftExt;
 import vfyjxf.bettercrashes.utils.CrashUtils;
 import vfyjxf.bettercrashes.utils.GuiCrashScreen;
 import vfyjxf.bettercrashes.utils.GuiInitErrorScreen;
-import vfyjxf.bettercrashes.utils.IPatchedMinecraft;
 import vfyjxf.bettercrashes.utils.StateManager;
 
 /**
  * @author Runemoro
  */
 @Mixin(Minecraft.class)
-public abstract class MinecraftMixin implements IPatchedMinecraft {
+public abstract class MinecraftMixin implements MinecraftExt {
 
     @Shadow
     @Final
