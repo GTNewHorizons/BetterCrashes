@@ -56,19 +56,15 @@ public final class ModIdentifier {
         return mods;
     }
 
-    public static Set<ModContainer> identifyFromClass(String className) {
-        return identifyFromClass(className, makeModMap());
-    }
-
     private static Set<ModContainer> identifyFromClass(String className, Map<File, Set<ModContainer>> modMap) {
         // Skip identification for Mixin, one's mod copy of the library is shared with all other mods
         if (className.startsWith("org.spongepowered.asm.mixin.")) return Collections.emptySet();
 
         // Get the URL of the class
-        final String untrasformedName = untransformName(Launch.classLoader, className);
-        URL url = Launch.classLoader.getResource(untrasformedName.replace('.', '/') + ".class");
+        final String untransformedName = untransformName(Launch.classLoader, className);
+        URL url = Launch.classLoader.getResource(untransformedName.replace('.', '/') + ".class");
         if (url == null) {
-            log.warn("Failed to identify " + className + " (untransformed name: " + untrasformedName + ")");
+            log.warn("Failed to identify " + className + " (untransformed name: " + untransformedName + ")");
             return Collections.emptySet();
         }
 
@@ -88,7 +84,10 @@ public final class ModIdentifier {
         return Collections.emptySet();
     }
 
+    private static Map<File, Set<ModContainer>> cachedModMap = null;
+
     private static Map<File, Set<ModContainer>> makeModMap() {
+        if (cachedModMap != null) return cachedModMap;
         Map<File, Set<ModContainer>> modMap = new HashMap<>();
         for (ModContainer mod : Loader.instance().getModList()) {
             Set<ModContainer> currentMods = modMap.getOrDefault(mod.getSource(), new HashSet<>());
@@ -99,22 +98,26 @@ public final class ModIdentifier {
                 throw new RuntimeException(e);
             }
         }
-
         try {
-            modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
-            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML,
-            // forge)
+            // Ignore minecraft jar (minecraft)
+            modMap.remove(Loader.instance().getMinecraftModContainer().getSource());
+            // Ignore forge jar (FML,forge)
+            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource());
         } catch (NullPointerException ignored) {
             // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
         }
-
-        return modMap;
+        cachedModMap = Collections.unmodifiableMap(modMap);
+        return cachedModMap;
     }
+
+    private static Method untransformNameMethod = null;
 
     private static String untransformName(LaunchClassLoader launchClassLoader, String className) {
         try {
-            Method untransformNameMethod = LaunchClassLoader.class.getDeclaredMethod("untransformName", String.class);
-            untransformNameMethod.setAccessible(true);
+            if (untransformNameMethod == null) {
+                untransformNameMethod = LaunchClassLoader.class.getDeclaredMethod("untransformName", String.class);
+                untransformNameMethod.setAccessible(true);
+            }
             return (String) untransformNameMethod.invoke(launchClassLoader, className);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
