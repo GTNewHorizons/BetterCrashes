@@ -99,10 +99,8 @@ public final class ModIdentifier {
             }
         }
         try {
-            // Ignore minecraft jar (minecraft)
-            modMap.remove(Loader.instance().getMinecraftModContainer().getSource());
-            // Ignore forge jar (FML,forge)
-            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource());
+            modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
+            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML,forge)
         } catch (NullPointerException ignored) {
             // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
         }
