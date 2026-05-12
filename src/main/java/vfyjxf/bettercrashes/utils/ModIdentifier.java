@@ -89,20 +89,22 @@ public final class ModIdentifier {
     private static Map<File, Set<ModContainer>> makeModMap() {
         if (cachedModMap != null) return cachedModMap;
         Map<File, Set<ModContainer>> modMap = new HashMap<>();
-        for (ModContainer mod : Loader.instance().getModList()) {
-            Set<ModContainer> currentMods = modMap.getOrDefault(mod.getSource(), new HashSet<>());
+        Map<String, ModContainer> indexedModList = Loader.instance().getIndexedModList();
+
+        ModContainer mc = Loader.instance().getMinecraftModContainer(); // Ignore minecraft jar (minecraft)
+        ModContainer fml = Loader.instance().getIndexedModList().get("FML"); // Ignore forge jar (FML,forge)
+
+        for (ModContainer mod : indexedModList.values()) {
+            // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
+            if (mod.equals(fml) || mod.equals(mc)) continue;
+
+            Set<ModContainer> currentMods = new HashSet<>();
             currentMods.add(mod);
             try {
                 modMap.put(mod.getSource().getCanonicalFile(), currentMods);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        try {
-            modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
-            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML,forge)
-        } catch (NullPointerException ignored) {
-            // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
         }
         cachedModMap = Collections.unmodifiableMap(modMap);
         return cachedModMap;
