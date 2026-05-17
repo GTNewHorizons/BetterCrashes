@@ -43,7 +43,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import cpw.mods.fml.client.SplashProgress;
-import cpw.mods.fml.common.Loader;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
 import vfyjxf.bettercrashes.mixins.interfaces.MinecraftExt;
 import vfyjxf.bettercrashes.utils.CrashUtils;
@@ -362,9 +361,7 @@ public abstract class MinecraftMixin implements MinecraftExt {
     @Unique
     private void betterCrashes$runGUILoop(GuiScreen screen) {
         displayGuiScreen(screen);
-        while (running && currentScreen != null
-                && !(currentScreen instanceof GuiMainMenu)
-                && !(Loader.isModLoaded("custommainmenu"))) {
+        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu)) {
             if (Display.isCreated() && Display.isCloseRequested()) {
                 System.exit(0);
             }
