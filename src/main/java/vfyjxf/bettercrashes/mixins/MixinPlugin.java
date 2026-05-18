@@ -48,6 +48,7 @@ public class MixinPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
         if (FMLLaunchHandler.side().isClient()) {
             mixins.add("CrashReportMixin");
             mixins.add("MinecraftMixin");
+            mixins.add("ItemStackMixin");
         }
         return mixins;
     }
