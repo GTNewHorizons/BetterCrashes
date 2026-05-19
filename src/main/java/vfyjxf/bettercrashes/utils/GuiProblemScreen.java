@@ -218,8 +218,8 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     protected int drawCenteredLongString(FontRenderer fontRenderer, String text, int y, int maxWidth, int color) {
         int yOffset = 0;
-        for (Object line : Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(text, maxWidth)) {
-            drawCenteredString(fontRenderer, (String) line, width / 2, y + yOffset, color);
+        for (String line : fontRenderer.listFormattedStringToWidth(text, maxWidth)) {
+            drawCenteredString(fontRenderer, line, width / 2, y + yOffset, color);
             yOffset += 9;
         }
         return yOffset;
@@ -227,8 +227,8 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     protected int drawLongString(FontRenderer fontRenderer, String text, int x, int y, int width, int color) {
         int yOffset = 0;
-        for (Object line : Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(text, width)) {
-            drawString(fontRenderer, (String) line, x, y + yOffset, color);
+        for (String line : fontRenderer.listFormattedStringToWidth(text, width)) {
+            drawString(fontRenderer, line, x, y + yOffset, color);
             yOffset += 9;
         }
         return yOffset;
