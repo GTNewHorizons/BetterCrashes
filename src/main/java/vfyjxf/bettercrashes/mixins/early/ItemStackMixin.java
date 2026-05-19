@@ -3,16 +3,20 @@ package vfyjxf.bettercrashes.mixins.early;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import vfyjxf.bettercrashes.BetterCrashes;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IllegalFormatException;
+import java.util.Set;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
 
-    private static final Logger LOGGER = LogManager.getLogger("BetterCrashes");
+    private static final Set<Item> BROKEN_ITEMS = Collections.synchronizedSet(new HashSet<>());
 
     @Redirect(
             method = "getDisplayName",
@@ -22,9 +26,16 @@ public abstract class ItemStackMixin {
     private String betterCrashes$safeGetDisplayName(Item item, ItemStack stack) {
         try {
             return item.getItemStackDisplayName(stack);
-        } catch (Exception e) {
-            String unlocalizedName = item.getUnlocalizedName(stack);
-            LOGGER.error("Format error in display name for item '{}'", unlocalizedName, e);
+        } catch (IllegalFormatException e) {
+            String unlocalizedName;
+            try {
+                unlocalizedName = item.getUnlocalizedName(stack);
+            } catch (IllegalFormatException ex2) {
+                unlocalizedName = item.getClass().getSimpleName();
+            }
+            if (BROKEN_ITEMS.add(item)) {
+                BetterCrashes.logger.error("Format error in display name for item '{}'", unlocalizedName, e);
+            }
             return unlocalizedName + " [FORMAT ERROR]";
         }
     }
