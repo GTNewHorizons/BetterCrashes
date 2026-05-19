@@ -45,10 +45,10 @@ public class MixinPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public List<String> getMixins(Set<String> loadedCoreMods) {
         final List<String> mixins = new ArrayList<>();
+        mixins.add("ItemStackMixin");
         if (FMLLaunchHandler.side().isClient()) {
             mixins.add("CrashReportMixin");
             mixins.add("MinecraftMixin");
-            mixins.add("ItemStackMixin");
         }
         return mixins;
     }
