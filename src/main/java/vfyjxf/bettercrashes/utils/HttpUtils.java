@@ -1,7 +1,7 @@
 package vfyjxf.bettercrashes.utils;
 
 import static vfyjxf.bettercrashes.BetterCrashes.NAME;
-import static vfyjxf.bettercrashes.BetterCrashes.VERSION;
+import static vfyjxf.bettercrashes.Tags.VERSION;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
