@@ -24,7 +24,7 @@ public abstract class ItemStackMixin {
             return item.getItemStackDisplayName(stack);
         } catch (Exception e) {
             String unlocalizedName = item.getUnlocalizedName(stack);
-            LOGGER.warn("Format error in display name for item '{}': {}", unlocalizedName, e.getMessage());
+            LOGGER.error("Format error in display name for item '{}'", unlocalizedName, e);
             return unlocalizedName + " [FORMAT ERROR]";
         }
     }
