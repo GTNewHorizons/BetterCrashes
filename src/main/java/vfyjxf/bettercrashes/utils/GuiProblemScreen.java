@@ -220,7 +220,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
         int yOffset = 0;
         for (String line : fontRenderer.listFormattedStringToWidth(text, maxWidth)) {
             drawCenteredString(fontRenderer, line, width / 2, y + yOffset, color);
-            yOffset += 9;
+            yOffset += fontRenderer.FONT_HEIGHT;
         }
         return yOffset;
     }
