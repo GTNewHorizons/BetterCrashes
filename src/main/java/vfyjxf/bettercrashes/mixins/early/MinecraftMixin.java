@@ -7,6 +7,7 @@
 package vfyjxf.bettercrashes.mixins.early;
 
 import java.util.Queue;
+import java.util.concurrent.FutureTask;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -74,7 +75,7 @@ public abstract class MinecraftMixin implements MinecraftExt {
 
     @Shadow
     @Final
-    private Queue field_152351_aB; // field_152351_aB --> scheduledTasks
+    private Queue<FutureTask<?>> field_152351_aB; // field_152351_aB --> scheduledTasks
 
     @Shadow
     public EntityRenderer entityRenderer;
