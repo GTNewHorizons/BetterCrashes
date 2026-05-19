@@ -25,12 +25,10 @@ public class GuiCrashScreen extends GuiProblemScreen {
     @Override
     public void initGui() {
         super.initGui();
-        int extraLines = fontRendererObj.listFormattedStringToWidth(getModListString(), 310).size() - 1;
-        int buttonY = height / 4 + 120 + 12 + extraLines * 9;
         GuiOptionButton mainMenuButton = new GuiOptionButton(
                 0,
                 width / 2 - 50 - 115,
-                buttonY,
+                getButtonY(),
                 110,
                 20,
                 I18n.format("bettercrashes.gui.crash.toTitle"));

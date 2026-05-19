@@ -38,6 +38,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
     protected final CrashReport report;
     private volatile URL pasteLink = null;
     private String modListString;
+    private List<String> modListLines;
     protected List<String> detectedUnsupportedModNames;
 
     public GuiProblemScreen(CrashReport report) {
@@ -48,8 +49,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
     public void initGui() {
         mc.setIngameNotInFocus();
         buttonList.clear();
-        int extraLines = fontRendererObj.listFormattedStringToWidth(getModListString(), 310).size() - 1;
-        int buttonY = height / 4 + 120 + 12 + extraLines * 9;
+        int buttonY = getButtonY();
         buttonList.add(
                 new GuiButton(
                         1,
@@ -216,6 +216,17 @@ public abstract class GuiProblemScreen extends GuiScreen {
         return modListString;
     }
 
+    protected List<String> getModListLines() {
+        if (modListLines == null) {
+            modListLines = fontRendererObj.listFormattedStringToWidth(getModListString(), 310);
+        }
+        return modListLines;
+    }
+
+    protected int getButtonY() {
+        return height / 4 + 120 + 12 + (getModListLines().size() - 1) * fontRendererObj.FONT_HEIGHT;
+    }
+
     protected int drawCenteredLongString(FontRenderer fontRenderer, String text, int y, int maxWidth, int color) {
         int yOffset = 0;
         for (String line : fontRenderer.listFormattedStringToWidth(text, maxWidth)) {
@@ -229,7 +240,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
         int yOffset = 0;
         for (String line : fontRenderer.listFormattedStringToWidth(text, width)) {
             drawString(fontRenderer, line, x, y + yOffset, color);
-            yOffset += 9;
+            yOffset += fontRenderer.FONT_HEIGHT;
         }
         return yOffset;
     }
