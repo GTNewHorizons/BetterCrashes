@@ -35,6 +35,9 @@ import vfyjxf.bettercrashes.upload.CrashReportUpload;
 @SideOnly(Side.CLIENT)
 public abstract class GuiProblemScreen extends GuiScreen {
 
+    private static final int MAX_MOD_LIST_LINES = 3;
+    private static final int MOD_LIST_WIDTH = 310;
+
     protected final CrashReport report;
     private volatile URL pasteLink = null;
     private String modListString;
@@ -162,7 +165,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
         drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph1"), x, y += 18, textColor);
 
         y += 11;
-        y += drawCenteredLongString(fontRendererObj, getModListString(), y, 310, 0xE0E000);
+        y += drawCenteredLines(fontRendererObj, getModListLines(), y, 0xE0E000);
 
         if (isCrashLogExpectedToBeGenerated()) {
             drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph2"), x, y += 11, textColor);
@@ -189,7 +192,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
                     fontRendererObj,
                     StringUtils.join(detectedUnsupportedModNames, ", "),
                     y,
-                    310,
+                    MOD_LIST_WIDTH,
                     0xE0E000);
             drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph5"), x, y += 12, textColor);
         }
@@ -218,18 +221,29 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     protected List<String> getModListLines() {
         if (modListLines == null) {
-            modListLines = fontRendererObj.listFormattedStringToWidth(getModListString(), 310);
+            List<String> lines = fontRendererObj.listFormattedStringToWidth(getModListString(), MOD_LIST_WIDTH);
+            if (lines.size() > MAX_MOD_LIST_LINES) {
+                lines = new ArrayList<>(lines.subList(0, MAX_MOD_LIST_LINES));
+                lines.set(MAX_MOD_LIST_LINES - 1, lines.get(MAX_MOD_LIST_LINES - 1) + "...");
+            }
+            modListLines = lines;
         }
         return modListLines;
     }
 
     protected int getButtonY() {
-        return height / 4 + 120 + 12 + (getModListLines().size() - 1) * fontRendererObj.FONT_HEIGHT;
+        int y = height / 4 + 120 + 12 + (getModListLines().size() - 1) * fontRendererObj.FONT_HEIGHT;
+        int lastRowOffset = StringUtils.isNotEmpty(BetterCrashesConfig.issueTrackerURL) ? 25 : 0;
+        return Math.min(y, height - 20 - 4 - lastRowOffset);
     }
 
     protected int drawCenteredLongString(FontRenderer fontRenderer, String text, int y, int maxWidth, int color) {
+        return drawCenteredLines(fontRenderer, fontRenderer.listFormattedStringToWidth(text, maxWidth), y, color);
+    }
+
+    protected int drawCenteredLines(FontRenderer fontRenderer, List<String> lines, int y, int color) {
         int yOffset = 0;
-        for (String line : fontRenderer.listFormattedStringToWidth(text, maxWidth)) {
+        for (String line : lines) {
             drawCenteredString(fontRenderer, line, width / 2, y + yOffset, color);
             yOffset += fontRenderer.FONT_HEIGHT;
         }
