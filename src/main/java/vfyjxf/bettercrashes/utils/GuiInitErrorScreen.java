@@ -24,11 +24,12 @@ public class GuiInitErrorScreen extends GuiProblemScreen {
     public void initGui() {
         mc.setIngameNotInFocus();
         buttonList.clear();
+        int buttonY = getButtonY();
         buttonList.add(
                 new GuiButton(
                         1,
                         width / 2 - 155,
-                        height / 4 + 120 + 12,
+                        buttonY,
                         150,
                         20,
                         I18n.format("bettercrashes.gui.common.openCrashReport")));
@@ -36,7 +37,7 @@ public class GuiInitErrorScreen extends GuiProblemScreen {
                 new GuiButton(
                         2,
                         width / 2 - 155 + 160,
-                        height / 4 + 120 + 12,
+                        buttonY,
                         150,
                         20,
                         I18n.format("bettercrashes.gui.common.uploadReportAndCopyLink")));

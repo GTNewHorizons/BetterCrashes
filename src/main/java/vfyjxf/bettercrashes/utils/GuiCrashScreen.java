@@ -28,7 +28,7 @@ public class GuiCrashScreen extends GuiProblemScreen {
         GuiOptionButton mainMenuButton = new GuiOptionButton(
                 0,
                 width / 2 - 50 - 115,
-                height / 4 + 120 + 12,
+                getButtonY(),
                 110,
                 20,
                 I18n.format("bettercrashes.gui.crash.toTitle"));

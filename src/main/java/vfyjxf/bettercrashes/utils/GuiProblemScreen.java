@@ -35,9 +35,13 @@ import vfyjxf.bettercrashes.upload.CrashReportUpload;
 @SideOnly(Side.CLIENT)
 public abstract class GuiProblemScreen extends GuiScreen {
 
+    private static final int MAX_MOD_LIST_LINES = 3;
+    private static final int MOD_LIST_WIDTH = 310;
+
     protected final CrashReport report;
     private volatile URL pasteLink = null;
     private String modListString;
+    private List<String> modListLines;
     protected List<String> detectedUnsupportedModNames;
 
     public GuiProblemScreen(CrashReport report) {
@@ -48,11 +52,12 @@ public abstract class GuiProblemScreen extends GuiScreen {
     public void initGui() {
         mc.setIngameNotInFocus();
         buttonList.clear();
+        int buttonY = getButtonY();
         buttonList.add(
                 new GuiButton(
                         1,
                         width / 2 - 50,
-                        height / 4 + 120 + 12,
+                        buttonY,
                         110,
                         20,
                         I18n.format("bettercrashes.gui.common.openCrashReport")));
@@ -60,7 +65,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
                 new GuiButton(
                         2,
                         width / 2 - 50 + 115,
-                        height / 4 + 120 + 12,
+                        buttonY,
                         110,
                         20,
                         I18n.format("bettercrashes.gui.common.uploadReportAndCopyLink")));
@@ -69,7 +74,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
                     new GuiButton(
                             3,
                             width / 2 - 50 - 15,
-                            height / 4 + 120 + 12 + 25,
+                            buttonY + 25,
                             140,
                             20,
                             I18n.format("bettercrashes.gui.common.issueTracker")));
@@ -159,7 +164,8 @@ public abstract class GuiProblemScreen extends GuiScreen {
         drawString(fontRendererObj, getScreenSummary(), x, y, textColor);
         drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph1"), x, y += 18, textColor);
 
-        drawCenteredString(fontRendererObj, getModListString(), width / 2, y += 11, 0xE0E000);
+        y += 11;
+        y += drawCenteredLines(fontRendererObj, getModListLines(), y, 0xE0E000);
 
         if (isCrashLogExpectedToBeGenerated()) {
             drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph2"), x, y += 11, textColor);
@@ -181,11 +187,12 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
         if (hasUnsupportedMods) {
             drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph4"), x, y += 10, textColor);
-            drawCenteredString(
+            y += 11;
+            y += drawCenteredLongString(
                     fontRendererObj,
                     StringUtils.join(detectedUnsupportedModNames, ", "),
-                    width / 2,
-                    y += 11,
+                    y,
+                    MOD_LIST_WIDTH,
                     0xE0E000);
             drawString(fontRendererObj, I18n.format("bettercrashes.gui.common.paragraph5"), x, y += 12, textColor);
         }
@@ -212,11 +219,42 @@ public abstract class GuiProblemScreen extends GuiScreen {
         return modListString;
     }
 
+    protected List<String> getModListLines() {
+        if (modListLines == null) {
+            List<String> lines = fontRendererObj.listFormattedStringToWidth(getModListString(), MOD_LIST_WIDTH);
+            if (lines.size() > MAX_MOD_LIST_LINES) {
+                lines = new ArrayList<>(lines.subList(0, MAX_MOD_LIST_LINES));
+                lines.set(MAX_MOD_LIST_LINES - 1, lines.get(MAX_MOD_LIST_LINES - 1) + "...");
+            }
+            modListLines = lines;
+        }
+        return modListLines;
+    }
+
+    protected int getButtonY() {
+        int y = height / 4 + 120 + 12 + (getModListLines().size() - 1) * fontRendererObj.FONT_HEIGHT;
+        int lastRowOffset = StringUtils.isNotEmpty(BetterCrashesConfig.issueTrackerURL) ? 25 : 0;
+        return Math.min(y, height - 20 - 4 - lastRowOffset);
+    }
+
+    protected int drawCenteredLongString(FontRenderer fontRenderer, String text, int y, int maxWidth, int color) {
+        return drawCenteredLines(fontRenderer, fontRenderer.listFormattedStringToWidth(text, maxWidth), y, color);
+    }
+
+    protected int drawCenteredLines(FontRenderer fontRenderer, List<String> lines, int y, int color) {
+        int yOffset = 0;
+        for (String line : lines) {
+            drawCenteredString(fontRenderer, line, width / 2, y + yOffset, color);
+            yOffset += fontRenderer.FONT_HEIGHT;
+        }
+        return yOffset;
+    }
+
     protected int drawLongString(FontRenderer fontRenderer, String text, int x, int y, int width, int color) {
         int yOffset = 0;
-        for (Object line : Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(text, width)) {
-            drawString(fontRenderer, (String) line, x, y + yOffset, color);
-            yOffset += 9;
+        for (String line : fontRenderer.listFormattedStringToWidth(text, width)) {
+            drawString(fontRenderer, line, x, y + yOffset, color);
+            yOffset += fontRenderer.FONT_HEIGHT;
         }
         return yOffset;
     }
