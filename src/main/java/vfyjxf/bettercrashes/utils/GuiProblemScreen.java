@@ -27,6 +27,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import vfyjxf.bettercrashes.BetterCrashes;
 import vfyjxf.bettercrashes.BetterCrashesConfig;
 import vfyjxf.bettercrashes.mixins.interfaces.CrashReportExt;
 import vfyjxf.bettercrashes.mixins.interfaces.MinecraftExt;
@@ -37,6 +38,10 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     private static final int MAX_MOD_LIST_LINES = 3;
     private static final int MOD_LIST_WIDTH = 310;
+
+    private static final int OPEN_CRASH_REPORT_BUTTON_ID = 1;
+    private static final int UPLOAD_REPORT_AND_COPY_LINT_BUTTON_ID = 2;
+    private static final int OPEN_ISSUE_TRACKER_BUTTON_ID = 3;
 
     protected final CrashReport report;
     private volatile URL pasteLink = null;
@@ -55,7 +60,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
         int buttonY = getButtonY();
         buttonList.add(
                 new GuiButton(
-                        1,
+                        OPEN_CRASH_REPORT_BUTTON_ID,
                         width / 2 - 50,
                         buttonY,
                         110,
@@ -63,7 +68,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
                         I18n.format("bettercrashes.gui.common.openCrashReport")));
         buttonList.add(
                 new GuiButton(
-                        2,
+                        UPLOAD_REPORT_AND_COPY_LINT_BUTTON_ID,
                         width / 2 - 50 + 115,
                         buttonY,
                         110,
@@ -72,7 +77,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
         if (StringUtils.isNotEmpty(BetterCrashesConfig.issueTrackerURL)) {
             buttonList.add(
                     new GuiButton(
-                            3,
+                            OPEN_ISSUE_TRACKER_BUTTON_ID,
                             width / 2 - 50 - 15,
                             buttonY + 25,
                             140,
@@ -83,19 +88,26 @@ public abstract class GuiProblemScreen extends GuiScreen {
 
     @Override
     protected void actionPerformed(GuiButton button) {
-        if (button.id == 1) {
-            try {
-                CrashUtils.openCrashReport(report);
-            } catch (IOException e) {
-                button.displayString = I18n.format("bettercrashes.gui.common.failed");
-                button.enabled = false;
-                e.printStackTrace();
+        switch (button.id) {
+            case OPEN_CRASH_REPORT_BUTTON_ID -> {
+                boolean opened = CrashUtils.openCrashReport(report);
+                if (!opened) {
+                    button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                }
             }
-        }
-        if (button.id == 2) {
-            if (pasteLink == null) {
+
+            case UPLOAD_REPORT_AND_COPY_LINT_BUTTON_ID -> {
+                if (pasteLink != null) {
+                    boolean opened = CrashUtils.openBrowser(pasteLink.toString());
+                    if (!opened) {
+                        button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                    }
+                    break;
+                }
+
                 button.enabled = false;
                 button.displayString = I18n.format("bettercrashes.gui.common.uploading");
+
                 Thread thread = new Thread("BetterCrashes report uploading") {
 
                     @Override
@@ -107,25 +119,26 @@ public abstract class GuiProblemScreen extends GuiScreen {
                             }
                             synchronized (button) {
                                 button.enabled = true;
-                                button.displayString = I18n.format("bettercrashes.gui.common.success");
+                                button.displayString = I18n.format("bettercrashes.gui.common.openUploadedCrashReport");
                             }
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            BetterCrashes.logger.error("Failed to upload crash report");
                             synchronized (button) {
-                                button.enabled = false;
+                                button.enabled = true;
                                 button.displayString = I18n.format("bettercrashes.gui.common.failed");
                             }
                         }
                     }
                 };
                 thread.start();
-            } else {
-                CrashUtils.openBrowser(pasteLink.toString());
             }
 
-        }
-        if (button.id == 3) {
-            CrashUtils.openBrowser(BetterCrashesConfig.issueTrackerURL);
+            case OPEN_ISSUE_TRACKER_BUTTON_ID -> {
+                boolean opened = CrashUtils.openBrowser(BetterCrashesConfig.issueTrackerURL);
+                if (!opened) {
+                    button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                }
+            }
         }
     }
 

@@ -6,16 +6,14 @@
 
 package vfyjxf.bettercrashes.utils;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
+
+import org.lwjgl.Sys;
 
 import vfyjxf.bettercrashes.BetterCrashes;
 
@@ -63,41 +61,27 @@ public class CrashUtils {
     }
 
     /**
-     * @param crashReport
-     * @throws IOException
      * @author vfyjxf
      */
-    public static void openCrashReport(CrashReport crashReport) throws IOException {
-
-        if (!Desktop.isDesktopSupported()) {
-            BetterCrashes.logger.error("Desktop is not supported");
-            return;
-        }
+    public static boolean openCrashReport(CrashReport crashReport) {
         File report = crashReport.getFile();
-        if (report != null && report.exists()) {
-            Desktop.getDesktop().open(report);
-        } else {
+        if (report == null || !report.exists()) {
             BetterCrashes.logger.error("Crash report was not generated");
+            return false;
         }
+
+        boolean opened = Sys.openURL(report.toURI().toString());
+        if (!opened) {
+            BetterCrashes.logger.error("Failed to open crash report: {}", report);
+        }
+        return opened;
     }
 
-    public static void openBrowser(URI uri) {
-        if (!Desktop.isDesktopSupported()) {
-            BetterCrashes.logger.error("Desktop is not supported. Cannot open link in browser.");
-            return;
+    public static boolean openBrowser(String url) {
+        boolean opened = Sys.openURL(url);
+        if (!opened) {
+            BetterCrashes.logger.error("Failed to open URL: {}", url);
         }
-        try {
-            Desktop.getDesktop().browse(uri);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void openBrowser(String url) {
-        try {
-            openBrowser(new URI(url));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        return opened;
     }
 }
