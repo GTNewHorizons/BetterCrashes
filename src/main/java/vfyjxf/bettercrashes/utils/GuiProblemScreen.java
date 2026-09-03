@@ -40,7 +40,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
     private static final int MOD_LIST_WIDTH = 310;
 
     private static final int OPEN_CRASH_REPORT_BUTTON_ID = 1;
-    private static final int UPLOAD_REPORT_AND_COPY_LINT_BUTTON_ID = 2;
+    private static final int UPLOAD_REPORT_AND_COPY_LINK_BUTTON_ID = 2;
     private static final int OPEN_ISSUE_TRACKER_BUTTON_ID = 3;
 
     protected final CrashReport report;
@@ -65,15 +65,15 @@ public abstract class GuiProblemScreen extends GuiScreen {
                         buttonY,
                         110,
                         20,
-                        I18n.format("bettercrashes.gui.common.openCrashReport")));
+                        getButtonText(OPEN_CRASH_REPORT_BUTTON_ID)));
         buttonList.add(
                 new GuiButton(
-                        UPLOAD_REPORT_AND_COPY_LINT_BUTTON_ID,
+                        UPLOAD_REPORT_AND_COPY_LINK_BUTTON_ID,
                         width / 2 - 50 + 115,
                         buttonY,
                         110,
                         20,
-                        I18n.format("bettercrashes.gui.common.uploadReportAndCopyLink")));
+                        getButtonText(UPLOAD_REPORT_AND_COPY_LINK_BUTTON_ID)));
         if (StringUtils.isNotEmpty(BetterCrashesConfig.issueTrackerURL)) {
             buttonList.add(
                     new GuiButton(
@@ -82,8 +82,18 @@ public abstract class GuiProblemScreen extends GuiScreen {
                             buttonY + 25,
                             140,
                             20,
-                            I18n.format("bettercrashes.gui.common.issueTracker")));
+                            getButtonText(OPEN_ISSUE_TRACKER_BUTTON_ID)));
         }
+    }
+
+    private String getButtonText(int id) {
+        return switch (id) {
+            case OPEN_CRASH_REPORT_BUTTON_ID -> I18n.format("bettercrashes.gui.common.openCrashReport");
+            case UPLOAD_REPORT_AND_COPY_LINK_BUTTON_ID -> I18n
+                    .format("bettercrashes.gui.common.uploadReportAndCopyLink");
+            case OPEN_ISSUE_TRACKER_BUTTON_ID -> I18n.format("bettercrashes.gui.common.issueTracker");
+            default -> "";
+        };
     }
 
     @Override
@@ -93,14 +103,18 @@ public abstract class GuiProblemScreen extends GuiScreen {
                 boolean opened = CrashUtils.openCrashReport(report);
                 if (!opened) {
                     button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                } else {
+                    button.displayString = getButtonText(button.id);
                 }
             }
 
-            case UPLOAD_REPORT_AND_COPY_LINT_BUTTON_ID -> {
+            case UPLOAD_REPORT_AND_COPY_LINK_BUTTON_ID -> {
                 if (pasteLink != null) {
                     boolean opened = CrashUtils.openBrowser(pasteLink.toString());
                     if (!opened) {
                         button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                    } else {
+                        button.displayString = I18n.format("bettercrashes.gui.common.openUploadedCrashReport");
                     }
                     break;
                 }
@@ -114,15 +128,18 @@ public abstract class GuiProblemScreen extends GuiScreen {
                     public void run() {
                         try {
                             pasteLink = CrashReportUpload.uploadCrashReport(report.getCompleteReport());
-                            if (pasteLink != null) {
-                                setClipboardString(pasteLink.toString());
-                            }
                             synchronized (button) {
                                 button.enabled = true;
-                                button.displayString = I18n.format("bettercrashes.gui.common.openUploadedCrashReport");
+                                if (pasteLink != null) {
+                                    setClipboardString(pasteLink.toString());
+                                    button.displayString = I18n
+                                            .format("bettercrashes.gui.common.openUploadedCrashReport");
+                                } else {
+                                    button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                                }
                             }
                         } catch (IOException e) {
-                            BetterCrashes.logger.error("Failed to upload crash report");
+                            BetterCrashes.logger.error("Failed to upload crash report", e);
                             synchronized (button) {
                                 button.enabled = true;
                                 button.displayString = I18n.format("bettercrashes.gui.common.failed");
@@ -137,6 +154,8 @@ public abstract class GuiProblemScreen extends GuiScreen {
                 boolean opened = CrashUtils.openBrowser(BetterCrashesConfig.issueTrackerURL);
                 if (!opened) {
                     button.displayString = I18n.format("bettercrashes.gui.common.failed");
+                } else {
+                    button.displayString = getButtonText(button.id);
                 }
             }
         }
